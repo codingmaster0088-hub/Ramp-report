@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>US-Bangla Ramp Report System</title>
+    <!-- HTML2Canvas Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #003366; /* US-Bangla Blue */
+            --secondary: #005b96;
+            --accent: #eca400; /* Gold/Yellow */
+            --bg: #f8f9fa;
+            --text: #2c3e50;
+            --white: #ffffff;
+            --border: #dee2e6;
+            --shadow: 0 4px 15px rgba(0,0,0,0.05);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Text Transformation --- */
+        input:not(.no-caps), select, textarea, .uppercase-text {
+            text-transform: uppercase;
+        }
+
+        /* --- Utility Classes --- */
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        .flex-center { display: flex; justify-content: center; align-items: center; }
+        .text-center { text-align: center; }
+        .bold { font-weight: 700; }
+        .mt-2 { margin-top: 1rem; }
+        .mb-2 { margin-bottom: 1rem; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Layout --- */
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border-top: 4px solid var(--primary);
+        }
+
+        /* --- Mobile Adjusted Header --- */
+        .app-header {
+            background: var(--primary);
+            color: var(--white);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .header-title {
+            font-size: 1rem;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-group {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0; 
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .nav-btn:active { background: rgba(255,255,255,0.3); }
+
+        @media (max-width: 400px) {
+            .app-header { padding: 8px 10px; }
+            .header-title { font-size: 0.85rem; margin-right: 5px; }
+            .nav-btn { padding: 5px 8px; font-size: 0.75rem; }
+            .nav-group { gap: 4px; }
+        }
+
+        /* --- Inputs & Groups --- */
+        .form-group {
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--primary);
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .input-prefix {
+            background: #e9ecef;
+            padding: 10px 12px;
+            font-weight: bold;
+            color: #555;
+            font-size: 0.95rem;
+            border-right: 1px solid var(--border);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+        
+        .input-group input {
+            border: none;
+            border-radius: 0;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(0, 91, 150, 0.1);
+        }
+
+        input[readonly] {
+            background-color: #f8f9fa;
+            color: #555;
+            cursor: default;
+        }
+
+        /* --- NEW STYLES FOR ICONS IN INPUTS --- */
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        /* Space for right icon */
+        .input-wrapper input {
+            padding-right: 35px; 
+        }
+        
+        /* Space for both icons (Crew RPT) */
+        .input-wrapper.double-icon input {
+            padding-left: 35px;
+            padding-right: 35px;
+        }
+
+        .input-icon-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+            padding: 5px;
+            line-height: 1;
+        }
+
+        .icon-right {
+            right: 5px;
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+        .icon-right:active { opacity: 1; transform: translateY(-50%) scale(0.9); }
+
+        .icon-left {
+            left: 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--primary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: #f0f0f0;
+        }
+        .icon-left:active { background: var(--secondary); color: white; }
+        
+        .status-display {
+            font-weight: bold;
+            color: var(--primary);
+            background-color: #e8f4fd;
+            border-color: #b6d4fe;
+            text-align: center;
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 2px 5px rgba(0,51,102,0.3); }
+        .btn-secondary { background: white; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-danger { background: #dc3545; color: white; margin-top: 5px; }
+
+        /* --- Dashboard --- */
+        .option-card {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .option-card .icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .option-card:active { transform: scale(0.98); background: #f0f4f8; }
+
+        .row { display: flex; gap: 10px; }
+        .col { flex: 1; }
+
+        .form-section-title {
+            background: #eef2f5;
+            color: var(--primary);
+            padding: 8px 10px;
+            border-left: 4px solid var(--accent);
+            margin: 20px 0 15px 0;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .saved-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .saved-info h4 { color: var(--primary); font-size: 1rem; margin-bottom: 3px; }
+        .saved-info p { font-size: 0.8rem; color: #666; }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 4px; margin-left: 5px; cursor: pointer; border: none;}
+        .btn-edit { background: var(--secondary); color: white; }
+        .btn-del { background: #dc3545; color: white; font-weight: bold; padding: 6px 10px;}
+
+        #loading {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner {
+            width: 40px; height: 40px;
+            border: 4px solid #f3f3f3; border-top: 4px solid var(--primary);
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- REPORT PRINT TEMPLATE (FINAL VERSION) --- */
+        #report-output {
+            position: absolute; top: -9999px; left: -9999px;
+            width: 720px; 
+            background: white; color: #000;
+            font-family: 'Arial', sans-serif;
+            padding: 0;
+        }
+        
+        .modern-rpt { width: 100%; border: 4px solid var(--primary); }
+        
+        .rpt-header {
+            background: var(--primary); color: white;
+            padding: 25px 20px; text-align: center;
+            border-bottom: 4px solid var(--accent);
+        }
+        .rpt-header h1 { margin: 0; font-size: 34px; font-weight: 800; letter-spacing: 1px; }
+        .rpt-header h2 { margin: 8px 0 0; font-size: 22px; font-weight: 400; opacity: 0.9; }
+
+        /* Unified Padding for perfect vertical alignment */
+        .rpt-meta, .rpt-body, .rpt-footer {
+            padding: 20px 40px; 
+        }
+
+        .rpt-meta {
+            background: #f8f9fa;
+            border-bottom: 2px solid #000;
+        }
+        
+        .meta-grid { 
+            display: grid; 
+            grid-template-columns: 1.2fr 0.8fr; 
+            gap: 15px; 
+        }
+
+        /* --- ALIGNMENT FIX (Point 2) --- */
+        /* Target the even items (Right Column) in the grid to align right */
+        .meta-grid .meta-row:nth-child(even) {
+            text-align: right;
+        }
+
+        .meta-row, .rpt-table td {
+            font-family: 'Arial', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #000;
+            line-height: 1.4;
+        }
+
+        .meta-label { 
+            display: inline-block; 
+            width: 100px; 
+            color: var(--primary);
+            text-align: left; /* Labels stay left aligned relative to themselves */
+        }
+        
+        .meta-val { display: inline-block; }
+
+        .status-bar {
+            background: var(--accent); color: black;
+            text-align: center; font-size: 26px; font-weight: bold;
+            padding: 15px; border-bottom: 2px solid #ccc;
+            text-transform: uppercase;
+        }
+
+        .rpt-table { width: 100%; border-collapse: collapse; }
+        .rpt-table td {
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        .rpt-table tr:last-child td { border-bottom: none; }
+        
+        .rpt-time-col { 
+            text-align: right; /* Aligns with the Right Column of Top Grid */
+            font-family: 'Arial', sans-serif;
+            font-weight: 700;
+        }
+
+        .rpt-footer {
+            border-top: 2px solid #000; 
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-top: 0;
+        }
+        .note-box { width: 60%; font-size: 20px; font-weight: bold; }
+        .sig-box { text-align: center; border-top: 2px solid black; padding-top: 10px; min-width: 220px; }
+        .sig-name { font-weight: bold; font-size: 22px; }
+
+    </style>
+</head>
+<body>
+
+    <!-- NAV BAR -->
+    <nav id="navbar" class="app-header hidden">
+        <div class="header-title">US-BANGLA RAMP</div>
+        <div class="nav-group">
+            <button class="nav-btn" onclick="showPage('saved-page')">📂 SAVED</button>
+            <button class="nav-btn" onclick="showPage('dashboard-page')">🏠 DASH</button>
+            <button class="nav-btn" onclick="logout()" style="background: rgba(220,53,69,0.4);">LOGOUT</button>
+        </div>
+    </nav>
+
+    <!-- LOADING SPINNER -->
+    <div id="loading" class="hidden">
+        <div class="spinner"></div>
+        <p class="mt-2 bold uppercase">Generating Report...</p>
+    </div>
+
+    <!-- PAGE 1: LOGIN -->
+    <div id="login-page" class="container fade-in flex-center" style="min-height: 90vh;">
+        <div class="card text-center" style="width: 100%;">
+            <h1 class="bold" style="color:var(--primary); margin-bottom: 5px;">US BANGLA AIRLINES</h1>
+            <h2 class="bold" style="color:var(--secondary); font-size: 1.2rem;">RAMP REPORT</h2>
+            <p class="no-caps" style="font-size: 0.8rem; color: #777; font-style: italic; margin-bottom: 25px;">invention of radoan rasel</p>
+            
+            <div style="text-align: left;">
+                <div class="form-group">
+                    <label>USER NAME</label>
+                    <input type="text" id="login-name" placeholder="ENTER NAME">
+                </div>
+                <div class="form-group">
+                    <label>DESIGNATION</label>
+                    <input type="text" id="login-des" placeholder="E.G. FLIGHT OFFICER" onkeydown="if(event.key === 'Enter') handleLogin()">
+                </div>
+                <div class="form-group">
+                    <label>STATION</label>
+                    <input type="text" value="DHAKA" readonly style="font-weight: bold;">
+                </div>
+                <button class="btn btn-primary" onclick="handleLogin()">LOGIN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 2: DASHBOARD -->
+    <div id="dashboard-page" class="container hidden fade-in">
+        <h2 id="welcome-msg" class="text-center mb-2" style="color: var(--primary);">WELCOME</h2>
+        
+        <div class="option-card" onclick="startReport('DOMESTIC')">
+            <span class="icon">🛫</span>
+            DOMESTIC REPORT
+        </div>
+        
+        <div class="option-card" onclick="startReport('INTERNATIONAL')">
+            <span class="icon">🌍</span>
+            INTERNATIONAL REPORT
+        </div>
+    </div>
+
+    <!-- PAGE 3: REPORT INPUT FORM -->
+    <div id="report-page" class="container hidden fade-in">
+        <div class="card">
+            <h3 id="form-title" class="text-center mb-2 bold" style="color: var(--primary);">DOMESTIC REPORT</h3>
+            
+            <!-- Hidden Fields -->
+            <input type="hidden" id="report-id">
+            <input type="hidden" id="report-type">
+
+            <!-- FLIGHT INFO SECTION -->
+            <div class="row">
+                <div class="col form-group">
+                    <label>DATE</label>
+                    <!-- Date handles auto-today in JS -->
+                    <input type="text" id="inp-date" placeholder="DD MMM YY">
+                </div>
+                <div class="col form-group">
+                    <label>FLIGHT NUMBER</label>
+                    <div class="input-group">
+                        <div class="input-prefix">BS-</div>
+                        <input type="number" id="inp-flight" placeholder="000" onkeyup="handleFlightInput()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>ROUTE</label>
+                <input type="text" id="inp-route" placeholder="AUTO-DETECTED">
+            </div>
+
+            <div class="form-group">
+                <label>AIRCRAFT / REGISTRATION</label>
+                <div class="input-group">
+                    <input type="text" id="inp-ac" placeholder="E.G. AKM (AUTO S2-)" onkeyup="handleRegInput()">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col form-group">
+                    <label>BAY NO</label>
+                    <input type="number" id="inp-bay" placeholder="25">
+                </div>
+                <div class="col form-group">
+                    <label>STD (LT)</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="inp-std" placeholder="1400" onkeyup="calculateStatus()">
+                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-std')">🕒</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col form-group">
+                    <label>D/C (LT)</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="inp-dc" placeholder="1355">
+                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-dc')">🕒</button>
+                    </div>
+                </div>
+                <div class="col form-group">
+                    <label>C/O (LT)</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="inp-co" placeholder="1405" onkeyup="calculateStatus()">
+                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-co')">🕒</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INTERNATIONAL DOCS -->
+            <div id="intl-fields" class="hidden">
+                 <div class="row">
+                    <div class="col form-group">
+                        <label>DOC IN (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-docin" placeholder="0000">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-docin')">🕒</button>
+                        </div>
+                    </div>
+                    <div class="col form-group">
+                        <label>DOC OUT (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-docout" placeholder="0000">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-docout')">🕒</button>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+
+            <div class="form-group">
+                <label>FLIGHT STATUS (AUTO)</label>
+                <input type="text" id="inp-status" class="status-display" readonly placeholder="WAITING FOR STD & C/O...">
+            </div>
+
+            <div class="form-section-title">MAIN REPORT TIMINGS (LT 24H)</div>
+
+            <div class="row">
+                <div class="col form-group">
+                    <label>CREW RPT</label>
+                    <!-- CREW RPT with 2 icons (OB and Clock) -->
+                    <div class="input-wrapper double-icon">
+                        <button class="input-icon-btn icon-left" onclick="setCrewOB()">OB</button>
+                        <input type="text" id="inp-crew">
+                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-crew')">🕒</button>
+                    </div>
+                </div>
+                <div class="col form-group">
+                    <label>CLEANING</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="inp-clean">
+                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-clean')">🕒</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col form-group">
+                    <label>CATERING</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="inp-catering">
+                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-catering')">🕒</button>
+                    </div>
+                </div>
+                <div class="col form-group">
+                    <label>REFUELING</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="inp-refuel">
+                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-refuel')">🕒</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col form-group">
+                    <label>1ST BAG</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="inp-firstbag">
+                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-firstbag')">🕒</button>
+                    </div>
+                </div>
+                <div class="col form-group">
+                    <label>LAST BAG</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="inp-lastbag">
+                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-lastbag')">🕒</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="intl-ac-permit" class="form-group hidden">
+                <label>AC BOARDING PERMITTED</label>
+                <div class="input-wrapper">
+                    <input type="tel" id="inp-ac-permit">
+                    <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-ac-permit')">🕒</button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col form-group">
+                    <label>BOARDING START</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="inp-boarding">
+                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-boarding')">🕒</button>
+                    </div>
+                </div>
+                <div class="col form-group">
+                    <label>ALL ONBOARD</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="inp-pax">
+                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-pax')">🕒</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group"><label>GROUND TIME (MINS)</label><input type="number" id="inp-ground"></div>
+            
+            <div class="form-group">
+                <label>NOTE</label>
+                <textarea id="inp-note" rows="2"></textarea>
+            </div>
+
+            <div class="mt-2">
+                <button class="btn btn-primary mb-2" onclick="saveAndGenerate()">SAVE & DOWNLOAD JPG</button>
+                <button class="btn btn-secondary" onclick="resetForm()">NEW REPORT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 4: SAVED FLIGHTS -->
+    <div id="saved-page" class="container hidden fade-in">
+        <h2 class="text-center mb-2" style="color:var(--primary);">SAVED REPORTS</h2>
+        <div id="saved-list"></div>
+        <div id="empty-msg" class="text-center mt-2 hidden">NO SAVED REPORTS FOUND.</div>
+    </div>
+
+    <!-- ================================================== -->
+    <!-- HIDDEN HTML STRUCTURE FOR JPG GENERATION (MODERN) -->
+    <!-- ================================================== -->
+    <div id="report-output">
+        <div class="modern-rpt">
+            <div class="rpt-header">
+                <h1 id="out-flight-title">BS-XXX (DAC-XXX)</h1>
+                <h2>RAMP OPERATION REPORT</h2>
+            </div>
+            
+            <div class="rpt-meta">
+                <div class="meta-grid">
+                    <div class="meta-row">
+                        <span class="meta-label">DATE:</span>
+                        <span class="meta-val" id="out-date"></span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">STD:</span>
+                        <span class="meta-val"><span id="out-std"></span> LT</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">A/C:</span>
+                        <span class="meta-val" id="out-ac"></span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">D/C:</span>
+                        <span class="meta-val"><span id="out-dc"></span> LT</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">BAY NO:</span>
+                        <span class="meta-val" id="out-bay"></span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">C/O:</span>
+                        <span class="meta-val"><span id="out-co"></span> LT</span>
+                    </div>
+                    
+                    <!-- Intl Rows with IDs for conditional display -->
+                    <div class="meta-row intl-row hidden" id="row-docin">
+                        <span class="meta-label">DOC IN:</span>
+                        <span class="meta-val"><span id="out-docin"></span> LT</span>
+                    </div>
+                    <div class="meta-row intl-row hidden" id="row-docout">
+                        <span class="meta-label">DOC OUT:</span>
+                        <span class="meta-val"><span id="out-docout"></span> LT</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-bar" id="out-status">
+                FLIGHT IS ONTIME
+            </div>
+
+            <div class="rpt-body">
+                <table class="rpt-table">
+                    <tbody id="rpt-body-content">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="rpt-footer">
+                <div class="note-box">
+                    NOTE: <span id="out-note"></span>
+                </div>
+                <div class="sig-box">
+                    <div class="sig-name" id="out-officer">NAME</div>
+                    <div id="out-des">DESIGNATION</div>
+                    <div>DHAKA AIRPORT</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA & CONFIG ---
+        const routesDB = {
+            'DAC-JSR': [121,123,125,127,129],
+            'DAC-CGP': [101,103,105,107,109,111,115,117,119],
+            'DAC-CXB': [141,143,145,147,149,151,153,155,157,159],
+            'DAC-RJH': [161,163,165,167,169],
+            'DAC-BZL': [171,173,175],
+            'DAC-SPD': [181,183,185,187,189,191,193,195,197,199],
+            'DAC-ZYL': [531,533,535,537,539,541,543,545,547,549],
+            'DAC-AUH': [349],
+            'DAC-DXB': [341,343],
+            'DAC-SHJ': [345,347],
+            'DAC-JED': [361],
+            'DAC-RUH': [381],
+            'DAC-CCU': [201,203],
+            'DAC-MAA': [205,207],
+            'DAC-KUL': [315,317,319],
+            'DAC-MLE': [337,339],
+            'DAC-MCT': [321,323],
+            'DAC-DOH': [333,335],
+            'DAC-SIN': [307,309],
+            'DAC-BKK': [217,219],
+            'DAC-CAN': [325,327]
+        };
+
+        const state = {
+            user: JSON.parse(localStorage.getItem('usb_user')) || null,
+            savedReports: JSON.parse(localStorage.getItem('usb_reports')) || [],
+            currentReportType: 'DOMESTIC'
+        };
+
+        const fields = [
+            'inp-date', 'inp-std', 'inp-flight', 'inp-route', 'inp-ac', 'inp-bay', 'inp-status',
+            'inp-crew', 'inp-clean', 'inp-catering', 'inp-refuel', 'inp-firstbag', 'inp-lastbag',
+            'inp-boarding', 'inp-pax', 'inp-ground', 'inp-note', 'inp-dc', 'inp-co',
+            'inp-docin', 'inp-docout', 'inp-ac-permit'
+        ];
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            setTodayDate();
+            if (state.user) {
+                document.getElementById('welcome-msg').innerText = `WELCOME, ${state.user.name}`;
+                showPage('dashboard-page');
+            } else {
+                showPage('login-page');
+            }
+        };
+
+        function setTodayDate() {
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).toUpperCase().replace(/ /g, ' ');
+            document.getElementById('inp-date').value = dateStr;
+        }
+
+        // --- TIME HELPER FUNCTIONS (New) ---
+        function setCurrentTime(id) {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            const timeStr = hours + mins;
+            
+            document.getElementById(id).value = timeStr;
+            
+            // Trigger calculation if necessary
+            if (id === 'inp-std' || id === 'inp-co') {
+                calculateStatus();
+            }
+        }
+
+        function setCrewOB() {
+            document.getElementById('inp-crew').value = 'OB';
+        }
+
+        // --- NAVIGATION ---
+        function showPage(pageId) {
+            ['login-page', 'dashboard-page', 'report-page', 'saved-page'].forEach(p => document.getElementById(p).classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+            
+            const nav = document.getElementById('navbar');
+            if(pageId === 'login-page') nav.classList.add('hidden');
+            else nav.classList.remove('hidden');
+
+            if(pageId === 'saved-page') renderSavedList();
+        }
+
+        function logout() {
+            if(confirm("ARE YOU SURE YOU WANT TO LOGOUT?")) {
+                localStorage.removeItem('usb_user');
+                location.reload();
+            }
+        }
+
+        function handleLogin() {
+            const name = document.getElementById('login-name').value.trim().toUpperCase();
+            const des = document.getElementById('login-des').value.trim().toUpperCase();
+
+            if (!name || !des) {
+                alert("PLEASE FILL IN NAME AND DESIGNATION.");
+                return;
+            }
+
+            state.user = { name, des };
+            localStorage.setItem('usb_user', JSON.stringify(state.user));
+            document.getElementById('welcome-msg').innerText = `WELCOME, ${name}`;
+            showPage('dashboard-page');
+        }
+
+        // --- REPORT LOGIC ---
+        function startReport(type) {
+            state.currentReportType = type;
+            document.getElementById('form-title').innerText = `${type} REPORT`;
+            document.getElementById('report-type').value = type;
+            document.getElementById('report-id').value = '';
+
+            const intlFields = document.getElementById('intl-fields');
+            const intlPermit = document.getElementById('intl-ac-permit');
+            
+            if (type === 'INTERNATIONAL') {
+                intlFields.classList.remove('hidden');
+                intlPermit.classList.remove('hidden');
+            } else {
+                intlFields.classList.add('hidden');
+                intlPermit.classList.add('hidden');
+            }
+
+            resetForm();
+            setTodayDate(); 
+            showPage('report-page');
+        }
+
+        function resetForm() {
+            fields.forEach(id => {
+                if(id !== 'inp-date') document.getElementById(id).value = "";
+            });
+            document.getElementById('report-id').value = "";
+        }
+
+        // --- AUTOMATION LOGIC ---
+
+        function handleFlightInput() {
+            const fltNum = parseInt(document.getElementById('inp-flight').value);
+            const routeInput = document.getElementById('inp-route');
+            
+            if(!fltNum) return;
+
+            let foundRoute = "";
+            for (const [route, numbers] of Object.entries(routesDB)) {
+                if (numbers.includes(fltNum)) {
+                    foundRoute = route;
+                    break;
+                }
+            }
+            if(foundRoute) routeInput.value = foundRoute;
+        }
+
+        function handleRegInput() {
+            const input = document.getElementById('inp-ac');
+            let val = input.value.toUpperCase();
+        }
+
+        function formatRegistration(val) {
+            val = val.toUpperCase().trim();
+            if (!val) return "";
+
+            if (val.includes("SAU")) return "9H-SAU";
+            if (val.includes("BBG")) return "PK-BBG";
+            if (val.includes("BBH")) return "PK-BBH";
+
+            let cleanVal = val.replace("S2-", ""); 
+            let type = "";
+            
+            if (cleanVal.startsWith("AK")) type = "(ATR)";
+            else if (cleanVal.startsWith("AJ")) type = "(BOEING)";
+            else if (cleanVal.startsWith("AL")) type = "(AIRBUS)";
+
+            const finalReg = val.startsWith("S2-") ? val : "S2-" + cleanVal;
+            return `${finalReg} ${type}`.trim();
+        }
+
+        function calculateStatus() {
+            const stdStr = document.getElementById('inp-std').value;
+            const coStr = document.getElementById('inp-co').value;
+            const statusInput = document.getElementById('inp-status');
+
+            if (stdStr.length < 4 || coStr.length < 4) {
+                statusInput.value = ""; 
+                return;
+            }
+
+            const stdMins = parseInt(stdStr.substring(0,2)) * 60 + parseInt(stdStr.substring(2,4));
+            const coMins = parseInt(coStr.substring(0,2)) * 60 + parseInt(coStr.substring(2,4));
+
+            const diff = coMins - stdMins;
+            const absDiff = Math.abs(diff);
+            const unit = absDiff === 1 ? "MIN" : "MINS";
+            const padDiff = absDiff < 10 ? `0${absDiff}` : absDiff;
+
+            let result = "";
+
+            if (diff === 0) {
+                result = "FLIGHT IS ONTIME";
+            } else if (diff > 0) {
+                result = `FLIGHT ${padDiff} ${unit} DELAY`;
+            } else {
+                result = `FLIGHT ${padDiff} ${unit} EARLY`;
+            }
+
+            statusInput.value = result;
+        }
+
+        // --- SAVE & GENERATE ---
+        async function saveAndGenerate() {
+            const data = {};
+            fields.forEach(id => data[id] = document.getElementById(id).value.toUpperCase());
+
+            data['inp-ac'] = formatRegistration(data['inp-ac']);
+            calculateStatus();
+            data['inp-status'] = document.getElementById('inp-status').value;
+
+            if(!data['inp-flight'] || !data['inp-std']) {
+                alert("PLEASE ENTER FLIGHT NUMBER AND STD.");
+                return;
+            }
+
+            const reportId = document.getElementById('report-id').value || Date.now().toString();
+            const reportEntry = {
+                id: reportId,
+                type: state.currentReportType,
+                date: data['inp-date'],
+                flight: "BS-" + data['inp-flight'],
+                route: data['inp-route'],
+                timestamp: new Date().toISOString(),
+                formData: data
+            };
+
+            const existingIndex = state.savedReports.findIndex(r => r.id === reportId);
+            if(existingIndex >= 0) state.savedReports[existingIndex] = reportEntry;
+            else state.savedReports.push(reportEntry);
+            
+            localStorage.setItem('usb_reports', JSON.stringify(state.savedReports));
+            await generateJPG(data, state.currentReportType);
+        }
+
+        async function generateJPG(data, type) {
+            document.getElementById('loading').classList.remove('hidden');
+
+            document.getElementById('out-flight-title').innerText = `BS-${data['inp-flight']} (${data['inp-route']})`;
+            document.getElementById('out-date').innerText = data['inp-date'];
+            document.getElementById('out-std').innerText = formatTime(data['inp-std']);
+            document.getElementById('out-dc').innerText = formatTime(data['inp-dc']);
+            document.getElementById('out-co').innerText = formatTime(data['inp-co']);
+            document.getElementById('out-bay').innerText = data['inp-bay'];
+            document.getElementById('out-ac').innerText = data['inp-ac'];
+            
+            // --- STATUS BAR TEXT & COLOR LOGIC ---
+            const statusText = data['inp-status'];
+            const bar = document.getElementById('out-status');
+            bar.innerText = statusText;
+
+            // Reset defaults
+            bar.style.backgroundColor = ""; 
+            bar.style.color = "";
+
+            if (statusText.includes("DELAY")) {
+                bar.style.backgroundColor = "#dc3545"; // Red
+                bar.style.color = "white";
+            } else if (statusText.includes("EARLY")) {
+                bar.style.backgroundColor = "#28a745"; // Green
+                bar.style.color = "white";
+            } else {
+                // Ontime (or waiting)
+                bar.style.backgroundColor = "#eca400"; // Yellow/Gold
+                bar.style.color = "black";
+            }
+
+            document.getElementById('out-note').innerText = data['inp-note'];
+            document.getElementById('out-officer').innerText = state.user.name;
+            document.getElementById('out-des').innerText = state.user.des;
+
+            // --- INT'L DOCS VISIBILITY (Modified for logic 3) ---
+            const docInRow = document.getElementById('row-docin');
+            const docOutRow = document.getElementById('row-docout');
+            
+            // Reset to hidden
+            docInRow.classList.add('hidden');
+            docOutRow.classList.add('hidden');
+
+            if (type === 'INTERNATIONAL') {
+                if (data['inp-docin'] && data['inp-docin'].trim() !== "") {
+                    docInRow.classList.remove('hidden');
+                    document.getElementById('out-docin').innerText = formatTime(data['inp-docin']);
+                }
+                if (data['inp-docout'] && data['inp-docout'].trim() !== "") {
+                    docOutRow.classList.remove('hidden');
+                    document.getElementById('out-docout').innerText = formatTime(data['inp-docout']);
+                }
+            }
+
+            const body = document.getElementById('rpt-body-content');
+            body.innerHTML = ''; 
+
+            const addRow = (label, valId, isIntlOnly = false) => {
+                if (isIntlOnly && type !== 'INTERNATIONAL') return;
+                const timeVal = formatTime(data[valId]);
+                if(!timeVal && valId !== 'inp-ground') return; 
+
+                const suffix = valId === 'inp-ground' ? 'MINS' : 'LT';
+                
+                const html = `
+                    <tr>
+                        <td>${label}</td>
+                        <td class="rpt-time-col">${timeVal} ${suffix}</td>
+                    </tr>
+                `;
+                body.innerHTML += html;
+            };
+
+            addRow('CREW REPORTED', 'inp-crew');
+            addRow('CLEANING DONE', 'inp-clean');
+            addRow('CATERING DONE', 'inp-catering');
+            addRow('REFUELING DONE', 'inp-refuel');
+            addRow('FIRST BAGGAGE', 'inp-firstbag');
+            addRow('LAST BAGGAGE', 'inp-lastbag');
+            addRow('BOARDING PERMIT', 'inp-ac-permit', true);
+            addRow('BOARDING START', 'inp-boarding');
+            addRow('ALL ONBOARD', 'inp-pax');
+            addRow('GROUND TIME', 'inp-ground');
+
+            setTimeout(() => {
+                const element = document.getElementById('report-output');
+                html2canvas(element, { scale: 2 }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `RAMP_BS${data['inp-flight']}_${data['inp-date'].replace(/ /g,'')}.jpg`;
+                    link.href = canvas.toDataURL('image/jpeg', 0.9);
+                    link.click();
+                    document.getElementById('loading').classList.add('hidden');
+                    alert("REPORT DOWNLOADED SUCCESSFULLY");
+                });
+            }, 600);
+        }
+
+        // --- SAVED LIST (Modified for logic 4) ---
+        function renderSavedList() {
+            const list = document.getElementById('saved-list');
+            const empty = document.getElementById('empty-msg');
+            list.innerHTML = '';
+
+            if (state.savedReports.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            const sorted = [...state.savedReports].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            sorted.forEach(report => {
+                const item = document.createElement('div');
+                item.className = 'saved-item';
+                item.innerHTML = `
+                    <div class="saved-info">
+                        <h4>${report.flight} (${report.route})</h4>
+                        <p>${report.date} | ${report.type}</p>
+                    </div>
+                    <div>
+                        <button class="btn-sm btn-edit" onclick="editReport('${report.id}')">EDIT</button>
+                        <button class="btn-sm btn-del" onclick="deleteReport('${report.id}')">✖</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function editReport(id) {
+            const report = state.savedReports.find(r => r.id === id);
+            if (!report) return;
+
+            startReport(report.type);
+            document.getElementById('report-id').value = report.id;
+            
+            for (const [key, value] of Object.entries(report.formData)) {
+                if(key === 'inp-flight') {
+                    document.getElementById(key).value = value;
+                } else {
+                    const field = document.getElementById(key);
+                    if (field) field.value = value;
+                }
+            }
+            calculateStatus();
+        }
+
+        function deleteReport(id) {
+            if(confirm("ARE YOU SURE YOU WANT TO REMOVE THIS REPORT?")) {
+                state.savedReports = state.savedReports.filter(r => r.id !== id);
+                localStorage.setItem('usb_reports', JSON.stringify(state.savedReports));
+                renderSavedList();
+            }
+        }
+
+        function formatTime(val) {
+            if(!val) return '';
+            return val;
+        }
+
+    </script>
+</body>
+</html>

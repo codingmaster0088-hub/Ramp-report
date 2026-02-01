@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>US-Bangla Ramp Report System</title>
+    <title>US-Bangla Ramp Report</title>
     <!-- HTML2Canvas Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
@@ -12,11 +12,13 @@
             --primary: #003366; /* US-Bangla Blue */
             --secondary: #005b96;
             --accent: #eca400; /* Gold/Yellow */
-            --bg: #f8f9fa;
+            --success: #28a745;
+            --danger: #dc3545;
+            --bg: #f4f7f6;
             --text: #2c3e50;
             --white: #ffffff;
-            --border: #dee2e6;
-            --shadow: 0 4px 15px rgba(0,0,0,0.05);
+            --border: #dde2e6;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
             --transition: all 0.3s ease;
         }
 
@@ -34,26 +36,23 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
         }
 
-        /* --- Text Transformation --- */
-        input:not(.no-caps), select, textarea, .uppercase-text {
-            text-transform: uppercase;
-        }
+        /* --- Animations --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Utility Classes --- */
+        .fade-in { animation: fadeIn 0.5s ease-out; }
         .hidden { display: none !important; }
-        .fade-in { animation: fadeIn 0.4s ease-in-out; }
-        .flex-center { display: flex; justify-content: center; align-items: center; }
+
+        /* --- Utility --- */
+        input:not(.no-caps), select, textarea, .uppercase-text { text-transform: uppercase; }
+        
         .text-center { text-align: center; }
         .bold { font-weight: 700; }
         .mt-2 { margin-top: 1rem; }
         .mb-2 { margin-bottom: 1rem; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
 
         /* --- Layout --- */
         .container {
@@ -61,6 +60,7 @@
             max-width: 600px;
             margin: 0 auto;
             padding: 15px;
+            padding-bottom: 50px;
             flex: 1;
         }
 
@@ -70,130 +70,125 @@
             padding: 20px;
             box-shadow: var(--shadow);
             margin-bottom: 20px;
-            border-top: 4px solid var(--primary);
+            border-top: 5px solid var(--primary);
+            animation: slideUp 0.5s ease-out;
         }
 
-        /* --- Mobile Adjusted Header --- */
+        /* --- Header --- */
         .app-header {
             background: var(--primary);
             color: var(--white);
             padding: 10px 15px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
 
-        .header-title {
-            font-size: 1rem;
-            font-weight: bold;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .nav-group {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0; 
-        }
-
-        .nav-btn {
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .nav-btn:active { background: rgba(255,255,255,0.3); }
-
-        @media (max-width: 400px) {
-            .app-header { padding: 8px 10px; }
-            .header-title { font-size: 0.85rem; margin-right: 5px; }
-            .nav-btn { padding: 5px 8px; font-size: 0.75rem; }
-            .nav-group { gap: 4px; }
-        }
-
-        /* --- Inputs & Groups --- */
-        .form-group {
-            margin-bottom: 12px;
+        .header-main-text {
+            font-size: 1.1rem;
+            font-weight: 900;
+            line-height: 1.2;
             text-align: left;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 4px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--primary);
-        }
-
-        .input-group {
-            display: flex;
-            align-items: center;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            overflow: hidden;
-            background: white;
+            width: 100%;
+            margin-bottom: 8px;
         }
         
-        .input-prefix {
-            background: #e9ecef;
-            padding: 10px 12px;
+        .nav-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: flex-end;
+        }
+
+        /* Pill Buttons for Header */
+        .nav-pill {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
             font-weight: bold;
-            color: #555;
-            font-size: 0.95rem;
-            border-right: 1px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.2);
+            min-width: 60px;
+        }
+        
+        .nav-pill:active { transform: scale(0.95); }
+        .nav-pill.saved { background: rgba(236, 164, 0, 0.2); color: #eca400; }
+        .nav-pill.dash { background: rgba(255, 255, 255, 0.15); color: white; }
+        .nav-pill.logout { background: rgba(220, 53, 69, 0.3); color: #ffb3b3; }
+        .nav-pill span { font-size: 1.2rem; margin-bottom: 2px; }
+
+        @media (min-width: 400px) {
+            .app-header { flex-direction: row; justify-content: space-between; }
+            .header-main-text { margin-bottom: 0; width: auto; margin-right: auto; }
+            .nav-group { width: auto; }
+        }
+
+        /* --- Inputs --- */
+        .form-group { margin-bottom: 12px; text-align: left; }
+        
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: 700; 
+            font-size: 0.8rem; 
+            color: var(--primary); 
+            letter-spacing: 0.5px; 
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 1rem;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 16px;
+            line-height: 1.5;
             outline: none;
+            background: #fdfdfd;
             transition: var(--transition);
-        }
-        
-        .input-group input {
-            border: none;
-            border-radius: 0;
+            color: #000;
         }
 
         input:focus, select:focus, textarea:focus {
             border-color: var(--secondary);
+            background: #fff;
             box-shadow: 0 0 0 3px rgba(0, 91, 150, 0.1);
         }
 
-        input[readonly] {
-            background-color: #f8f9fa;
-            color: #555;
-            cursor: default;
-        }
-
-        /* --- NEW STYLES FOR ICONS IN INPUTS --- */
-        .input-wrapper {
+        /* --- Section Boxes --- */
+        .section-box {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: #ffffff;
             position: relative;
-            width: 100%;
+        }
+        .section-title {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
         }
 
-        /* Space for right icon */
-        .input-wrapper input {
-            padding-right: 35px; 
-        }
-        
-        /* Space for both icons (Crew RPT) */
-        .input-wrapper.double-icon input {
-            padding-left: 35px;
-            padding-right: 35px;
-        }
+        /* --- Input Icons --- */
+        .input-wrapper { position: relative; width: 100%; }
+        .input-wrapper input { padding-right: 40px; } 
+        .input-wrapper.double-icon input { padding-left: 45px; padding-right: 40px; }
 
         .input-icon-btn {
             position: absolute;
@@ -204,209 +199,109 @@
             cursor: pointer;
             z-index: 10;
             padding: 5px;
-            line-height: 1;
         }
-
-        .icon-right {
-            right: 5px;
-            font-size: 1.2rem;
-            opacity: 0.7;
-        }
-        .icon-right:active { opacity: 1; transform: translateY(-50%) scale(0.9); }
-
+        .icon-right { right: 5px; font-size: 1.2rem; opacity: 0.5; }
         .icon-left {
-            left: 5px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: var(--primary);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            background: #f0f0f0;
-        }
-        .icon-left:active { background: var(--secondary); color: white; }
-        
-        .status-display {
-            font-weight: bold;
-            color: var(--primary);
-            background-color: #e8f4fd;
-            border-color: #b6d4fe;
-            text-align: center;
+            left: 5px; font-size: 0.7rem; font-weight: bold; color: var(--primary);
+            border: 1px solid var(--border); border-radius: 4px; background: #eef2f5; padding: 4px 6px;
         }
 
         /* --- Buttons --- */
         .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+            width: 100%; padding: 14px; border: none; border-radius: 8px;
+            font-size: 0.95rem; font-weight: 800; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            transition: var(--transition); margin-bottom: 8px;
         }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-secondary { background: white; color: var(--primary); border: 1px solid var(--primary); }
+        .btn-danger { background: var(--danger); color: white; }
+        
+        .btn-sm { padding: 8px 15px; font-size: 0.8rem; width: auto; margin: 0; }
 
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 2px 5px rgba(0,51,102,0.3); }
-        .btn-secondary { background: white; color: var(--primary); border: 2px solid var(--primary); }
-        .btn-danger { background: #dc3545; color: white; margin-top: 5px; }
-
-        /* --- Dashboard --- */
-        .option-card {
-            background: white;
-            border: 1px solid var(--border);
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            text-align: center;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--primary);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .option-card .icon { font-size: 2.5rem; margin-bottom: 10px; }
-        .option-card:active { transform: scale(0.98); background: #f0f4f8; }
+        /* Mode Toggle */
+        .mode-toggle-container { display: flex; background: #e9ecef; border-radius: 8px; padding: 4px; margin-bottom: 15px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; background: transparent; color: #666; transition: var(--transition); }
+        .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
         .row { display: flex; gap: 10px; }
-        .col { flex: 1; }
+        .col { flex: 1; min-width: 0; }
 
-        .form-section-title {
-            background: #eef2f5;
-            color: var(--primary);
-            padding: 8px 10px;
-            border-left: 4px solid var(--accent);
-            margin: 20px 0 15px 0;
-            font-weight: bold;
-            font-size: 0.9rem;
-            text-transform: uppercase;
+        /* --- Modal --- */
+        #custom-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 2000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+            backdrop-filter: blur(3px);
+        }
+        #custom-modal.show { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background: white; width: 85%; max-width: 350px;
+            border-radius: 15px; padding: 25px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateY(30px); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #custom-modal.show .modal-content { transform: translateY(0); }
+        .modal-title { font-size: 1.1rem; color: var(--primary); font-weight: 800; margin-bottom: 15px; }
+        .modal-btn { 
+            background: var(--primary); color: white; border: none; 
+            padding: 10px 25px; border-radius: 20px; font-weight: bold; 
+            margin-top: 10px; cursor: pointer; 
         }
 
-        .saved-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        /* --- Report Output --- */
+        #report-output {
+            position: absolute; top: -9999px; left: -9999px;
+            width: 800px; background: white; color: #000;
+            font-family: 'Arial', sans-serif; padding: 0;
+            border: 2px solid white;
         }
-        .saved-info h4 { color: var(--primary); font-size: 1rem; margin-bottom: 3px; }
-        .saved-info p { font-size: 0.8rem; color: #666; }
-        .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 4px; margin-left: 5px; cursor: pointer; border: none;}
-        .btn-edit { background: var(--secondary); color: white; }
-        .btn-del { background: #dc3545; color: white; font-weight: bold; padding: 6px 10px;}
+        .modern-rpt { width: 100%; border: 4px solid var(--primary); }
+        .rpt-header {
+            background: var(--primary); color: white;
+            padding: 20px; text-align: center; border-bottom: 5px solid var(--accent);
+        }
+        .rpt-header h1 { margin: 0; font-size: 40px; font-weight: 900; letter-spacing: 1px; }
+        .rpt-header h2 { margin: 5px 0 0; font-size: 24px; font-weight: normal; opacity: 0.9; text-transform: uppercase; }
+        
+        .section-header {
+            background: #eee; color: #000; font-weight: bold; 
+            padding: 8px 15px; font-size: 20px; border-top: 2px solid #000; border-bottom: 2px solid #000;
+        }
+
+        .rpt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px 20px; }
+        .rpt-item { padding: 5px 0; border-bottom: 1px solid #ccc; }
+        .rpt-lbl { display: block; font-size: 14px; color: var(--primary); font-weight: bold; }
+        .rpt-val { font-size: 22px; font-weight: bold; color: #000; }
+
+        .rpt-table { width: 100%; border-collapse: collapse; }
+        .rpt-table td { padding: 8px 20px; border-bottom: 1px solid #ddd; font-size: 20px; font-weight: bold; }
+        .rpt-table td:first-child { color: var(--primary); width: 60%; }
+        .rpt-table td:last-child { text-align: right; }
+
+        .rpt-footer {
+            border-top: 3px solid var(--primary); padding: 20px; 
+            display: flex; justify-content: space-between; align-items: flex-end;
+            background: #fff;
+        }
+        .status-bar {
+            text-align: center; font-size: 26px; font-weight: bold; padding: 10px;
+            color: white; margin: 0; text-transform: uppercase;
+        }
 
         #loading {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.95);
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            background: rgba(255,255,255,0.98); z-index: 999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
         .spinner {
-            width: 40px; height: 40px;
-            border: 4px solid #f3f3f3; border-top: 4px solid var(--primary);
-            border-radius: 50%; animation: spin 0.8s linear infinite;
+            width: 40px; height: 40px; border: 4px solid #f3f3f3; 
+            border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite;
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* --- REPORT PRINT TEMPLATE (FINAL VERSION) --- */
-        #report-output {
-            position: absolute; top: -9999px; left: -9999px;
-            width: 720px; 
-            background: white; color: #000;
-            font-family: 'Arial', sans-serif;
-            padding: 0;
-        }
-        
-        .modern-rpt { width: 100%; border: 4px solid var(--primary); }
-        
-        .rpt-header {
-            background: var(--primary); color: white;
-            padding: 25px 20px; text-align: center;
-            border-bottom: 4px solid var(--accent);
-        }
-        .rpt-header h1 { margin: 0; font-size: 34px; font-weight: 800; letter-spacing: 1px; }
-        .rpt-header h2 { margin: 8px 0 0; font-size: 22px; font-weight: 400; opacity: 0.9; }
-
-        /* Unified Padding for perfect vertical alignment */
-        .rpt-meta, .rpt-body, .rpt-footer {
-            padding: 20px 40px; 
-        }
-
-        .rpt-meta {
-            background: #f8f9fa;
-            border-bottom: 2px solid #000;
-        }
-        
-        .meta-grid { 
-            display: grid; 
-            grid-template-columns: 1.2fr 0.8fr; 
-            gap: 15px; 
-        }
-
-        /* --- ALIGNMENT FIX (Point 2) --- */
-        /* Target the even items (Right Column) in the grid to align right */
-        .meta-grid .meta-row:nth-child(even) {
-            text-align: right;
-        }
-
-        .meta-row, .rpt-table td {
-            font-family: 'Arial', sans-serif;
-            font-size: 22px;
-            font-weight: 700;
-            color: #000;
-            line-height: 1.4;
-        }
-
-        .meta-label { 
-            display: inline-block; 
-            width: 100px; 
-            color: var(--primary);
-            text-align: left; /* Labels stay left aligned relative to themselves */
-        }
-        
-        .meta-val { display: inline-block; }
-
-        .status-bar {
-            background: var(--accent); color: black;
-            text-align: center; font-size: 26px; font-weight: bold;
-            padding: 15px; border-bottom: 2px solid #ccc;
-            text-transform: uppercase;
-        }
-
-        .rpt-table { width: 100%; border-collapse: collapse; }
-        .rpt-table td {
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
-            vertical-align: middle;
-        }
-        .rpt-table tr:last-child td { border-bottom: none; }
-        
-        .rpt-time-col { 
-            text-align: right; /* Aligns with the Right Column of Top Grid */
-            font-family: 'Arial', sans-serif;
-            font-weight: 700;
-        }
-
-        .rpt-footer {
-            border-top: 2px solid #000; 
-            display: flex; justify-content: space-between; align-items: flex-end;
-            margin-top: 0;
-        }
-        .note-box { width: 60%; font-size: 20px; font-weight: bold; }
-        .sig-box { text-align: center; border-top: 2px solid black; padding-top: 10px; min-width: 220px; }
-        .sig-name { font-weight: bold; font-size: 22px; }
 
     </style>
 </head>
@@ -414,367 +309,406 @@
 
     <!-- NAV BAR -->
     <nav id="navbar" class="app-header hidden">
-        <div class="header-title">US-BANGLA RAMP</div>
+        <div class="header-main-text">
+            RAMP REPORT<br>US BANGLA AIRLINES
+        </div>
         <div class="nav-group">
-            <button class="nav-btn" onclick="showPage('saved-page')">📂 SAVED</button>
-            <button class="nav-btn" onclick="showPage('dashboard-page')">🏠 DASH</button>
-            <button class="nav-btn" onclick="logout()" style="background: rgba(220,53,69,0.4);">LOGOUT</button>
+            <div class="nav-pill saved" onclick="showPage('saved-page')">
+                <span>📂</span> SAVED
+            </div>
+            <div class="nav-pill dash" onclick="showPage('dashboard-page')">
+                <span>🏠</span> DASH
+            </div>
+            <div class="nav-pill logout" onclick="logout()">
+                <span>🚪</span> LOGOUT
+            </div>
         </div>
     </nav>
 
-    <!-- LOADING SPINNER -->
+    <!-- LOADING -->
     <div id="loading" class="hidden">
         <div class="spinner"></div>
-        <p class="mt-2 bold uppercase">Generating Report...</p>
+        <p class="mt-2 bold uppercase" style="color:var(--primary)">Processing...</p>
+    </div>
+
+    <!-- CUSTOM MODAL -->
+    <div id="custom-modal">
+        <div class="modal-content">
+            <div style="font-size:3rem; margin-bottom:10px;">👮‍♂️</div>
+            <div id="modal-msg" class="modal-title">MESSAGE HERE</div>
+            <button class="modal-btn" onclick="closeModal()">OKAY</button>
+        </div>
     </div>
 
     <!-- PAGE 1: LOGIN -->
-    <div id="login-page" class="container fade-in flex-center" style="min-height: 90vh;">
-        <div class="card text-center" style="width: 100%;">
-            <h1 class="bold" style="color:var(--primary); margin-bottom: 5px;">US BANGLA AIRLINES</h1>
-            <h2 class="bold" style="color:var(--secondary); font-size: 1.2rem;">RAMP REPORT</h2>
-            <p class="no-caps" style="font-size: 0.8rem; color: #777; font-style: italic; margin-bottom: 25px;">invention of radoan rasel</p>
+    <div id="login-page" class="container flex-center" style="min-height: 90vh;">
+        <div class="card text-center" style="width: 100%; max-width: 400px;">
+            <!-- Heading Modified -->
+            <h1 class="bold" style="color:var(--primary); font-size: 1.8rem;">US BANGLA AIRLINES</h1>
+            <h2 class="bold" style="color:var(--secondary); font-size: 1.1rem; letter-spacing: 2px;">RAMP REPORT SYSTEM</h2>
+            <p class="no-caps" style="font-size: 0.8rem; color: #888; margin-bottom: 30px; font-style: italic;">Invention of Radoan Rasel</p>
             
             <div style="text-align: left;">
                 <div class="form-group">
                     <label>USER NAME</label>
-                    <input type="text" id="login-name" placeholder="ENTER NAME">
+                    <input type="text" id="login-name" placeholder="ENTER NAME" enterkeyhint="next">
                 </div>
                 <div class="form-group">
                     <label>DESIGNATION</label>
-                    <input type="text" id="login-des" placeholder="E.G. FLIGHT OFFICER" onkeydown="if(event.key === 'Enter') handleLogin()">
+                    <input type="text" id="login-des" placeholder="E.G. OFFICER" onkeydown="if(event.key === 'Enter') handleLogin()">
                 </div>
-                <div class="form-group">
-                    <label>STATION</label>
-                    <input type="text" value="DHAKA" readonly style="font-weight: bold;">
-                </div>
-                <button class="btn btn-primary" onclick="handleLogin()">LOGIN</button>
+                <button class="btn btn-primary" onclick="handleLogin()" style="margin-top: 20px;">LOGIN</button>
             </div>
         </div>
     </div>
 
     <!-- PAGE 2: DASHBOARD -->
-    <div id="dashboard-page" class="container hidden fade-in">
-        <h2 id="welcome-msg" class="text-center mb-2" style="color: var(--primary);">WELCOME</h2>
-        
-        <div class="option-card" onclick="startReport('DOMESTIC')">
-            <span class="icon">🛫</span>
-            DOMESTIC REPORT
+    <div id="dashboard-page" class="container hidden">
+        <div class="text-center" style="margin-top: 20px;">
+            <h2 id="welcome-msg" style="color: var(--primary); font-weight: 800; font-size: 1.5rem;">WELCOME</h2>
+            <p style="color: #666; font-size: 0.9rem;">SELECT REPORT TYPE</p>
         </div>
         
-        <div class="option-card" onclick="startReport('INTERNATIONAL')">
-            <span class="icon">🌍</span>
-            INTERNATIONAL REPORT
+        <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 30px;">
+            <div class="card text-center" onclick="startReport('DOMESTIC')" style="cursor: pointer;">
+                <span style="font-size: 3rem; display:block; margin-bottom:10px;">✈️</span>
+                <div style="font-weight:bold; color:var(--primary); font-size:1.2rem;">DOMESTIC REPORT</div>
+            </div>
+            
+            <div class="card text-center" onclick="startReport('INTERNATIONAL')" style="cursor: pointer;">
+                <span style="font-size: 3rem; display:block; margin-bottom:10px;">🌏</span>
+                <div style="font-weight:bold; color:var(--primary); font-size:1.2rem;">INTERNATIONAL REPORT</div>
+            </div>
         </div>
     </div>
 
-    <!-- PAGE 3: REPORT INPUT FORM -->
-    <div id="report-page" class="container hidden fade-in">
+    <!-- PAGE 3: REPORT FORM -->
+    <div id="report-page" class="container hidden">
         <div class="card">
-            <h3 id="form-title" class="text-center mb-2 bold" style="color: var(--primary);">DOMESTIC REPORT</h3>
+            <h3 id="form-title" class="text-center mb-2 bold" style="color: var(--primary);">REPORT</h3>
             
-            <!-- Hidden Fields -->
+            <!-- MODE TOGGLE -->
+            <div class="mode-toggle-container">
+                <button class="mode-btn active" id="btn-round" onclick="toggleFlightMode('ROUND')">ROUND</button>
+                <button class="mode-btn" id="btn-direct" onclick="toggleFlightMode('DIRECT')">DIRECT</button>
+            </div>
+
             <input type="hidden" id="report-id">
             <input type="hidden" id="report-type">
+            <input type="hidden" id="flight-mode" value="ROUND">
 
-            <!-- FLIGHT INFO SECTION -->
-            <div class="row">
-                <div class="col form-group">
-                    <label>DATE</label>
-                    <!-- Date handles auto-today in JS -->
-                    <input type="text" id="inp-date" placeholder="DD MMM YY">
-                </div>
-                <div class="col form-group">
-                    <label>FLIGHT NUMBER</label>
-                    <div class="input-group">
-                        <div class="input-prefix">BS-</div>
-                        <input type="number" id="inp-flight" placeholder="000" onkeyup="handleFlightInput()">
+            <!-- TABLE 1: GENERAL -->
+            <div class="section-box">
+                <div class="section-title">GENERAL INFO</div>
+                <div class="row">
+                    <div class="col form-group">
+                        <label>DATE</label>
+                        <input type="text" id="inp-date" placeholder="DD MMM YY" enterkeyhint="next">
+                    </div>
+                    <div class="col form-group">
+                        <label>A/C REG</label>
+                        <input type="text" id="inp-ac" placeholder="E.G. AKM" enterkeyhint="next">
                     </div>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label>ROUTE</label>
-                <input type="text" id="inp-route" placeholder="AUTO-DETECTED">
-            </div>
-
-            <div class="form-group">
-                <label>AIRCRAFT / REGISTRATION</label>
-                <div class="input-group">
-                    <input type="text" id="inp-ac" placeholder="E.G. AKM (AUTO S2-)" onkeyup="handleRegInput()">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col form-group">
+                <div class="form-group">
                     <label>BAY NO</label>
-                    <input type="number" id="inp-bay" placeholder="25">
+                    <input type="number" id="inp-bay" placeholder="25" enterkeyhint="next">
                 </div>
-                <div class="col form-group">
-                    <label>STD (LT)</label>
-                    <div class="input-wrapper">
-                        <input type="tel" id="inp-std" placeholder="1400" onkeyup="calculateStatus()">
-                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-std')">🕒</button>
+                <!-- INT'L DOCS -->
+                <div id="intl-fields" class="hidden">
+                    <div class="row">
+                        <div class="col form-group">
+                            <label>DOC IN (LT)</label>
+                            <div class="input-wrapper">
+                                <input type="tel" id="inp-docin" placeholder="0000" enterkeyhint="next">
+                                <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-docin')">🕒</button>
+                            </div>
+                        </div>
+                        <div class="col form-group">
+                            <label>DOC OUT (LT)</label>
+                            <div class="input-wrapper">
+                                <input type="tel" id="inp-docout" placeholder="0000" enterkeyhint="next">
+                                <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-docout')">🕒</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col form-group">
-                    <label>D/C (LT)</label>
-                    <div class="input-wrapper">
-                        <input type="tel" id="inp-dc" placeholder="1355">
-                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-dc')">🕒</button>
+            <!-- TABLE 2: ARRIVAL -->
+            <div id="section-arrival" class="section-box">
+                <div class="section-title">ARRIVAL INFO</div>
+                <div class="row">
+                    <div class="col form-group">
+                        <label>ARV FLT</label>
+                        <div class="input-wrapper">
+                            <span style="position:absolute; left:12px; top:12px; font-weight:bold; color:#777; font-size:0.9rem;">BS-</span>
+                            <input type="number" id="inp-arv-flt" style="padding-left:40px;" onkeyup="handleFlightInput('arv')" enterkeyhint="next">
+                        </div>
+                    </div>
+                    <div class="col form-group">
+                        <label>ROUTE</label>
+                        <input type="text" id="inp-arv-route" placeholder="AUTO" enterkeyhint="next">
                     </div>
                 </div>
-                <div class="col form-group">
+                <div class="row">
+                    <div class="col form-group">
+                        <label>C/ON (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-con" placeholder="1300" onkeyup="calculateGroundTimeLogic()" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-con')">🕒</button>
+                        </div>
+                    </div>
+                    <div class="col form-group">
+                        <label>D/O (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-do" placeholder="1305" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-do')">🕒</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>ALL DISEM (LT)</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="inp-disem" enterkeyhint="next">
+                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-disem')">🕒</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLE 3: DEPARTURE -->
+            <div class="section-box">
+                <div class="section-title">DEPARTURE INFO</div>
+                <div class="row">
+                    <div class="col form-group">
+                        <label>DEPT FLT</label>
+                        <div class="input-wrapper">
+                            <span style="position:absolute; left:12px; top:12px; font-weight:bold; color:#777; font-size:0.9rem;">BS-</span>
+                            <input type="number" id="inp-dept-flt" style="padding-left:40px;" onkeyup="handleFlightInput('dept')" enterkeyhint="next">
+                        </div>
+                    </div>
+                    <div class="col form-group">
+                        <label>ROUTE</label>
+                        <input type="text" id="inp-dept-route" placeholder="AUTO" enterkeyhint="next">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col form-group">
+                        <label>STD (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-std" placeholder="1400" onkeyup="calculateStatus()" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-std')">🕒</button>
+                        </div>
+                    </div>
+                    <div class="col form-group">
+                        <label>D/C (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-dc" placeholder="1355" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-dc')">🕒</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label>C/O (LT)</label>
                     <div class="input-wrapper">
-                        <input type="tel" id="inp-co" placeholder="1405" onkeyup="calculateStatus()">
+                        <input type="tel" id="inp-co" placeholder="1405" onkeyup="calculateStatus(); calculateGroundTimeLogic()" enterkeyhint="next">
                         <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-co')">🕒</button>
                     </div>
                 </div>
-            </div>
 
-            <!-- INTERNATIONAL DOCS -->
-            <div id="intl-fields" class="hidden">
-                 <div class="row">
+                <div class="form-group">
+                    <label>FLIGHT STATUS</label>
+                    <input type="text" id="inp-status" readonly placeholder="..." style="background:#eef8ff; border-color:#baddff; color:var(--primary); font-weight:bold; text-align:center;">
+                </div>
+
+                <div class="row">
                     <div class="col form-group">
-                        <label>DOC IN (LT)</label>
-                        <div class="input-wrapper">
-                            <input type="tel" id="inp-docin" placeholder="0000">
-                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-docin')">🕒</button>
+                        <label>CREW RPT (LT)</label>
+                        <div class="input-wrapper double-icon">
+                            <button class="input-icon-btn icon-left" onclick="setCrewOB()">OB</button>
+                            <input type="text" id="inp-crew" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-crew')">🕒</button>
                         </div>
                     </div>
                     <div class="col form-group">
-                        <label>DOC OUT (LT)</label>
+                        <label>CLEANING (LT)</label>
                         <div class="input-wrapper">
-                            <input type="tel" id="inp-docout" placeholder="0000">
-                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-docout')">🕒</button>
+                            <input type="tel" id="inp-clean" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-clean')">🕒</button>
                         </div>
                     </div>
-                 </div>
+                </div>
+                <div class="row">
+                    <div class="col form-group">
+                        <label>CATERING (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-catering" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-catering')">🕒</button>
+                        </div>
+                    </div>
+                    <div class="col form-group">
+                        <label>REFUELING (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-refuel" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-refuel')">🕒</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col form-group">
+                        <label>1ST BAG (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-firstbag" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-firstbag')">🕒</button>
+                        </div>
+                    </div>
+                    <div class="col form-group">
+                        <label>LAST BAG (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-lastbag" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-lastbag')">🕒</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>BOARDING PERMITTED (LT)</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="inp-ac-permit" enterkeyhint="next">
+                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-ac-permit')">🕒</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col form-group">
+                        <label>BOARDING START (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-boarding" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-boarding')">🕒</button>
+                        </div>
+                    </div>
+                    <div class="col form-group">
+                        <label>ALL ONBOARD (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-pax" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-pax')">🕒</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>GROUND TIME (MINS)</label>
+                    <!-- Modified Input Type -->
+                    <input type="text" id="inp-ground" placeholder="Calculated" readonly enterkeyhint="next">
+                </div>
+
+                <div class="form-group">
+                    <label>NOTE</label>
+                    <textarea id="inp-note" rows="2" placeholder="OPTIONAL"></textarea>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>FLIGHT STATUS (AUTO)</label>
-                <input type="text" id="inp-status" class="status-display" readonly placeholder="WAITING FOR STD & C/O...">
+            <!-- BUTTONS -->
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn btn-primary" onclick="saveReport()">SAVE</button>
+                <button class="btn btn-success" onclick="downloadJPG()">DOWNLOAD</button>
             </div>
-
-            <div class="form-section-title">MAIN REPORT TIMINGS (LT 24H)</div>
-
-            <div class="row">
-                <div class="col form-group">
-                    <label>CREW RPT</label>
-                    <!-- CREW RPT with 2 icons (OB and Clock) -->
-                    <div class="input-wrapper double-icon">
-                        <button class="input-icon-btn icon-left" onclick="setCrewOB()">OB</button>
-                        <input type="text" id="inp-crew">
-                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-crew')">🕒</button>
-                    </div>
-                </div>
-                <div class="col form-group">
-                    <label>CLEANING</label>
-                    <div class="input-wrapper">
-                        <input type="tel" id="inp-clean">
-                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-clean')">🕒</button>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col form-group">
-                    <label>CATERING</label>
-                    <div class="input-wrapper">
-                        <input type="tel" id="inp-catering">
-                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-catering')">🕒</button>
-                    </div>
-                </div>
-                <div class="col form-group">
-                    <label>REFUELING</label>
-                    <div class="input-wrapper">
-                        <input type="tel" id="inp-refuel">
-                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-refuel')">🕒</button>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col form-group">
-                    <label>1ST BAG</label>
-                    <div class="input-wrapper">
-                        <input type="tel" id="inp-firstbag">
-                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-firstbag')">🕒</button>
-                    </div>
-                </div>
-                <div class="col form-group">
-                    <label>LAST BAG</label>
-                    <div class="input-wrapper">
-                        <input type="tel" id="inp-lastbag">
-                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-lastbag')">🕒</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="intl-ac-permit" class="form-group hidden">
-                <label>AC BOARDING PERMITTED</label>
-                <div class="input-wrapper">
-                    <input type="tel" id="inp-ac-permit">
-                    <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-ac-permit')">🕒</button>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col form-group">
-                    <label>BOARDING START</label>
-                    <div class="input-wrapper">
-                        <input type="tel" id="inp-boarding">
-                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-boarding')">🕒</button>
-                    </div>
-                </div>
-                <div class="col form-group">
-                    <label>ALL ONBOARD</label>
-                    <div class="input-wrapper">
-                        <input type="tel" id="inp-pax">
-                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-pax')">🕒</button>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group"><label>GROUND TIME (MINS)</label><input type="number" id="inp-ground"></div>
-            
-            <div class="form-group">
-                <label>NOTE</label>
-                <textarea id="inp-note" rows="2"></textarea>
-            </div>
-
-            <div class="mt-2">
-                <button class="btn btn-primary mb-2" onclick="saveAndGenerate()">SAVE & DOWNLOAD JPG</button>
-                <button class="btn btn-secondary" onclick="resetForm()">NEW REPORT</button>
-            </div>
+            <button class="btn btn-secondary" onclick="startReport(state.currentReportType)" style="margin-top:5px">NEW REPORT</button>
         </div>
     </div>
 
-    <!-- PAGE 4: SAVED FLIGHTS -->
-    <div id="saved-page" class="container hidden fade-in">
-        <h2 class="text-center mb-2" style="color:var(--primary);">SAVED REPORTS</h2>
+    <!-- PAGE 4: SAVED -->
+    <div id="saved-page" class="container hidden">
+        <h2 class="text-center mb-2" style="color:var(--primary); font-weight:800;">SAVED REPORTS</h2>
         <div id="saved-list"></div>
-        <div id="empty-msg" class="text-center mt-2 hidden">NO SAVED REPORTS FOUND.</div>
+        <div id="empty-msg" class="text-center mt-2 hidden">NO SAVED REPORTS</div>
     </div>
 
-    <!-- ================================================== -->
-    <!-- HIDDEN HTML STRUCTURE FOR JPG GENERATION (MODERN) -->
-    <!-- ================================================== -->
+    <!-- REPORT TEMPLATE -->
     <div id="report-output">
         <div class="modern-rpt">
             <div class="rpt-header">
-                <h1 id="out-flight-title">BS-XXX (DAC-XXX)</h1>
-                <h2>RAMP OPERATION REPORT</h2>
+                <h1 id="out-main-title">BS-XXX (ROUTE)</h1>
+                <h2>RAMP DEPARTURE REPORT</h2>
             </div>
             
-            <div class="rpt-meta">
-                <div class="meta-grid">
-                    <div class="meta-row">
-                        <span class="meta-label">DATE:</span>
-                        <span class="meta-val" id="out-date"></span>
-                    </div>
-                    <div class="meta-row">
-                        <span class="meta-label">STD:</span>
-                        <span class="meta-val"><span id="out-std"></span> LT</span>
-                    </div>
-                    <div class="meta-row">
-                        <span class="meta-label">A/C:</span>
-                        <span class="meta-val" id="out-ac"></span>
-                    </div>
-                    <div class="meta-row">
-                        <span class="meta-label">D/C:</span>
-                        <span class="meta-val"><span id="out-dc"></span> LT</span>
-                    </div>
-                    <div class="meta-row">
-                        <span class="meta-label">BAY NO:</span>
-                        <span class="meta-val" id="out-bay"></span>
-                    </div>
-                    <div class="meta-row">
-                        <span class="meta-label">C/O:</span>
-                        <span class="meta-val"><span id="out-co"></span> LT</span>
-                    </div>
-                    
-                    <!-- Intl Rows with IDs for conditional display -->
-                    <div class="meta-row intl-row hidden" id="row-docin">
-                        <span class="meta-label">DOC IN:</span>
-                        <span class="meta-val"><span id="out-docin"></span> LT</span>
-                    </div>
-                    <div class="meta-row intl-row hidden" id="row-docout">
-                        <span class="meta-label">DOC OUT:</span>
-                        <span class="meta-val"><span id="out-docout"></span> LT</span>
-                    </div>
+            <div class="section-header">GENERAL INFORMATION</div>
+            <div class="rpt-grid">
+                <div class="rpt-item"><span class="rpt-lbl">DATE</span><span class="rpt-val" id="out-date"></span></div>
+                <div class="rpt-item"><span class="rpt-lbl">A/C REG</span><span class="rpt-val" id="out-ac"></span></div>
+                <div class="rpt-item"><span class="rpt-lbl">BAY NO</span><span class="rpt-val" id="out-bay"></span></div>
+                <div class="rpt-item hidden" id="out-box-docin"><span class="rpt-lbl">DOC IN</span><span class="rpt-val" id="out-docin"></span></div>
+                <div class="rpt-item hidden" id="out-box-docout"><span class="rpt-lbl">DOC OUT</span><span class="rpt-val" id="out-docout"></span></div>
+            </div>
+
+            <div id="out-arrival-section">
+                <div class="section-header">ARRIVAL INFORMATION</div>
+                <div class="rpt-grid">
+                    <div class="rpt-item"><span class="rpt-lbl">FLIGHT</span><span class="rpt-val" id="out-arv-flt"></span></div>
+                    <div class="rpt-item"><span class="rpt-lbl">ROUTE</span><span class="rpt-val" id="out-arv-route"></span></div>
+                    <div class="rpt-item"><span class="rpt-lbl">C/ON</span><span class="rpt-val" id="out-con"></span></div>
+                    <div class="rpt-item"><span class="rpt-lbl">DOOR OPEN</span><span class="rpt-val" id="out-do"></span></div>
+                    <div class="rpt-item"><span class="rpt-lbl">ALL DISEM</span><span class="rpt-val" id="out-disem"></span></div>
                 </div>
             </div>
 
-            <div class="status-bar" id="out-status">
-                FLIGHT IS ONTIME
+            <div class="section-header">DEPARTURE INFORMATION</div>
+            <div class="rpt-grid">
+                <div class="rpt-item"><span class="rpt-lbl">FLIGHT</span><span class="rpt-val" id="out-dept-flt"></span></div>
+                <div class="rpt-item"><span class="rpt-lbl">ROUTE</span><span class="rpt-val" id="out-dept-route"></span></div>
+                <div class="rpt-item"><span class="rpt-lbl">STD</span><span class="rpt-val" id="out-std"></span></div>
+                <div class="rpt-item"><span class="rpt-lbl">DOOR CLOSE</span><span class="rpt-val" id="out-dc"></span></div>
+                <div class="rpt-item"><span class="rpt-lbl">C/OFF</span><span class="rpt-val" id="out-co"></span></div>
             </div>
 
-            <div class="rpt-body">
-                <table class="rpt-table">
-                    <tbody id="rpt-body-content">
-                        <!-- Dynamic Rows -->
-                    </tbody>
-                </table>
-            </div>
+            <div id="out-status-bar" class="status-bar">STATUS</div>
+
+            <table class="rpt-table" id="out-timings-table">
+                <!-- JS fills this -->
+            </table>
 
             <div class="rpt-footer">
-                <div class="note-box">
-                    NOTE: <span id="out-note"></span>
+                <div style="width:65%; font-size:18px;">
+                    <div style="background:#f0f0f0; padding:10px; border-left:4px solid var(--primary);">
+                        <strong style="color:var(--primary);">NOTE:</strong> <span id="out-note" style="font-weight:bold;"></span>
+                    </div>
                 </div>
-                <div class="sig-box">
-                    <div class="sig-name" id="out-officer">NAME</div>
-                    <div id="out-des">DESIGNATION</div>
-                    <div>DHAKA AIRPORT</div>
+                <div style="text-align:center; min-width:220px;">
+                    <div style="border-top:2px solid black; padding-top:5px;">
+                        <div id="out-officer" style="font-weight:900; font-size:22px;">NAME</div>
+                        <div id="out-des" style="font-size:16px;">DESIGNATION</div>
+                        <div style="font-size:16px; font-weight:bold; margin-top:2px;">DHAKA AIRPORT</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- DATA & CONFIG ---
+        // --- DATA ---
         const routesDB = {
-            'DAC-JSR': [121,123,125,127,129],
-            'DAC-CGP': [101,103,105,107,109,111,115,117,119],
-            'DAC-CXB': [141,143,145,147,149,151,153,155,157,159],
-            'DAC-RJH': [161,163,165,167,169],
-            'DAC-BZL': [171,173,175],
-            'DAC-SPD': [181,183,185,187,189,191,193,195,197,199],
-            'DAC-ZYL': [531,533,535,537,539,541,543,545,547,549],
-            'DAC-AUH': [349],
-            'DAC-DXB': [341,343],
-            'DAC-SHJ': [345,347],
-            'DAC-JED': [361],
-            'DAC-RUH': [381],
-            'DAC-CCU': [201,203],
-            'DAC-MAA': [205,207],
-            'DAC-KUL': [315,317,319],
-            'DAC-MLE': [337,339],
-            'DAC-MCT': [321,323],
-            'DAC-DOH': [333,335],
-            'DAC-SIN': [307,309],
-            'DAC-BKK': [217,219],
-            'DAC-CAN': [325,327]
+            'DAC-JSR': [121,123,125,127,129], 'DAC-CGP': [101,103,105,107,109,111,115,117,119],
+            'DAC-CXB': [141,143,145,147,149,151,153,155,157,159], 'DAC-RJH': [161,163,165,167,169],
+            'DAC-BZL': [171,173,175], 'DAC-SPD': [181,183,185,187,189,191,193,195,197,199],
+            'DAC-ZYL': [531,533,535,537,539,541,543,545,547,549], 'DAC-AUH': [349], 'DAC-DXB': [341,343],
+            'DAC-SHJ': [345,347], 'DAC-JED': [361], 'DAC-RUH': [381], 'DAC-CCU': [201,203],
+            'DAC-MAA': [205,207], 'DAC-KUL': [315,317,319], 'DAC-MLE': [337,339], 'DAC-MCT': [321,323],
+            'DAC-DOH': [333,335], 'DAC-SIN': [307,309], 'DAC-BKK': [217,219], 'DAC-CAN': [325,327]
         };
 
         const state = {
             user: JSON.parse(localStorage.getItem('usb_user')) || null,
             savedReports: JSON.parse(localStorage.getItem('usb_reports')) || [],
-            currentReportType: 'DOMESTIC'
+            currentReportType: 'DOMESTIC',
+            flightMode: 'ROUND'
         };
 
-        const fields = [
-            'inp-date', 'inp-std', 'inp-flight', 'inp-route', 'inp-ac', 'inp-bay', 'inp-status',
-            'inp-crew', 'inp-clean', 'inp-catering', 'inp-refuel', 'inp-firstbag', 'inp-lastbag',
-            'inp-boarding', 'inp-pax', 'inp-ground', 'inp-note', 'inp-dc', 'inp-co',
-            'inp-docin', 'inp-docout', 'inp-ac-permit'
-        ];
-
-        // --- INITIALIZATION ---
+        // --- INIT ---
         window.onload = function() {
             setTodayDate();
+            setupNextKey();
             if (state.user) {
                 document.getElementById('welcome-msg').innerText = `WELCOME, ${state.user.name}`;
                 showPage('dashboard-page');
@@ -783,63 +717,73 @@
             }
         };
 
+        // --- UTILS ---
         function setTodayDate() {
             const today = new Date();
             const dateStr = today.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).toUpperCase().replace(/ /g, ' ');
             document.getElementById('inp-date').value = dateStr;
         }
 
-        // --- TIME HELPER FUNCTIONS (New) ---
         function setCurrentTime(id) {
             const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const mins = String(now.getMinutes()).padStart(2, '0');
-            const timeStr = hours + mins;
-            
-            document.getElementById(id).value = timeStr;
-            
-            // Trigger calculation if necessary
-            if (id === 'inp-std' || id === 'inp-co') {
-                calculateStatus();
-            }
+            const t = String(now.getHours()).padStart(2, '0') + String(now.getMinutes()).padStart(2, '0');
+            document.getElementById(id).value = t;
+            if (['inp-std', 'inp-co', 'inp-con'].includes(id)) { calculateStatus(); calculateGroundTimeLogic(); }
         }
 
-        function setCrewOB() {
-            document.getElementById('inp-crew').value = 'OB';
+        function setCrewOB() { document.getElementById('inp-crew').value = 'OB'; }
+
+        function showModal(msg) {
+            const modal = document.getElementById('custom-modal');
+            document.getElementById('modal-msg').innerText = msg;
+            modal.classList.add('show');
+        }
+        function closeModal() { document.getElementById('custom-modal').classList.remove('show'); }
+
+        function setupNextKey() {
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    const focusable = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([disabled]), select, textarea, button'));
+                    const index = focusable.indexOf(e.target);
+                    if (index > -1 && index < focusable.length - 1) focusable[index + 1].focus();
+                }
+            });
         }
 
-        // --- NAVIGATION ---
-        function showPage(pageId) {
-            ['login-page', 'dashboard-page', 'report-page', 'saved-page'].forEach(p => document.getElementById(p).classList.add('hidden'));
-            document.getElementById(pageId).classList.remove('hidden');
+        // --- NAV ---
+        function showPage(id) {
+            document.querySelectorAll('.container').forEach(d => d.classList.add('hidden'));
+            const p = document.getElementById(id);
+            p.classList.remove('hidden');
+            if (id !== 'login-page') p.classList.add('fade-in'); 
             
             const nav = document.getElementById('navbar');
-            if(pageId === 'login-page') nav.classList.add('hidden');
-            else nav.classList.remove('hidden');
-
-            if(pageId === 'saved-page') renderSavedList();
+            id === 'login-page' ? nav.classList.add('hidden') : nav.classList.remove('hidden');
+            if(id === 'saved-page') renderSavedList();
         }
 
         function logout() {
-            if(confirm("ARE YOU SURE YOU WANT TO LOGOUT?")) {
-                localStorage.removeItem('usb_user');
+            showModal("BYE BYE OFFICER");
+            setTimeout(() => {
+                localStorage.removeItem('usb_user'); 
                 location.reload();
-            }
+            }, 1500);
         }
 
         function handleLogin() {
             const name = document.getElementById('login-name').value.trim().toUpperCase();
             const des = document.getElementById('login-des').value.trim().toUpperCase();
-
-            if (!name || !des) {
-                alert("PLEASE FILL IN NAME AND DESIGNATION.");
-                return;
-            }
-
-            state.user = { name, des };
-            localStorage.setItem('usb_user', JSON.stringify(state.user));
-            document.getElementById('welcome-msg').innerText = `WELCOME, ${name}`;
-            showPage('dashboard-page');
+            if(!name || !des) return;
+            
+            showModal("WELCOME OFFICER");
+            setTimeout(() => {
+                state.user = { name, des };
+                localStorage.setItem('usb_user', JSON.stringify(state.user));
+                document.getElementById('welcome-msg').innerText = `WELCOME, ${name}`;
+                closeModal();
+                showPage('dashboard-page');
+            }, 1500);
         }
 
         // --- REPORT LOGIC ---
@@ -848,296 +792,287 @@
             document.getElementById('form-title').innerText = `${type} REPORT`;
             document.getElementById('report-type').value = type;
             document.getElementById('report-id').value = '';
-
-            const intlFields = document.getElementById('intl-fields');
-            const intlPermit = document.getElementById('intl-ac-permit');
             
-            if (type === 'INTERNATIONAL') {
-                intlFields.classList.remove('hidden');
-                intlPermit.classList.remove('hidden');
-            } else {
-                intlFields.classList.add('hidden');
-                intlPermit.classList.add('hidden');
-            }
-
-            resetForm();
-            setTodayDate(); 
+            const intlFields = document.getElementById('intl-fields');
+            type === 'INTERNATIONAL' ? intlFields.classList.remove('hidden') : intlFields.classList.add('hidden');
+            
+            document.querySelectorAll('#report-page input:not([type="hidden"]), #report-page textarea').forEach(i => {
+                if(i.id !== 'inp-date') i.value = '';
+            });
+            
+            toggleFlightMode('ROUND');
+            setTodayDate();
             showPage('report-page');
         }
 
-        function resetForm() {
-            fields.forEach(id => {
-                if(id !== 'inp-date') document.getElementById(id).value = "";
-            });
-            document.getElementById('report-id').value = "";
+        function toggleFlightMode(mode) {
+            state.flightMode = mode;
+            document.getElementById('flight-mode').value = mode;
+            document.getElementById('btn-round').className = mode === 'ROUND' ? 'mode-btn active' : 'mode-btn';
+            document.getElementById('btn-direct').className = mode === 'DIRECT' ? 'mode-btn active' : 'mode-btn';
+            
+            const arvSection = document.getElementById('section-arrival');
+            mode === 'ROUND' ? arvSection.classList.remove('hidden') : arvSection.classList.add('hidden');
+            
+            const gt = document.getElementById('inp-ground');
+            if(mode === 'ROUND') {
+                gt.setAttribute('readonly', true);
+                gt.placeholder = "Calculated from C/ON to C/O";
+                gt.value = ""; // Clear previous
+                calculateGroundTimeLogic();
+            } else {
+                // Modification: Direct mode -> ON GROUND, Readonly
+                gt.setAttribute('readonly', true);
+                gt.value = "ON GROUND";
+            }
         }
 
-        // --- AUTOMATION LOGIC ---
-
-        function handleFlightInput() {
-            const fltNum = parseInt(document.getElementById('inp-flight').value);
-            const routeInput = document.getElementById('inp-route');
+        // --- AUTOMATION ---
+        function handleFlightInput(type) {
+            const id = type === 'arv' ? 'inp-arv-flt' : 'inp-dept-flt';
+            const routeId = type === 'arv' ? 'inp-arv-route' : 'inp-dept-route';
+            const num = parseInt(document.getElementById(id).value);
+            const rInput = document.getElementById(routeId);
             
-            if(!fltNum) return;
-
-            let foundRoute = "";
-            for (const [route, numbers] of Object.entries(routesDB)) {
-                if (numbers.includes(fltNum)) {
-                    foundRoute = route;
-                    break;
+            if(!num) return;
+            let found = "";
+            for(const [route, nums] of Object.entries(routesDB)) {
+                if(nums.includes(num)) { found = route; break; }
+                if(nums.includes(num - 1)) {
+                    const parts = route.split('-');
+                    found = `${parts[1]}-${parts[0]}`; break;
                 }
             }
-            if(foundRoute) routeInput.value = foundRoute;
+            if(found) rInput.value = found;
         }
 
-        function handleRegInput() {
-            const input = document.getElementById('inp-ac');
-            let val = input.value.toUpperCase();
-        }
-
-        function formatRegistration(val) {
+        function formatReg(val) {
             val = val.toUpperCase().trim();
-            if (!val) return "";
-
-            if (val.includes("SAU")) return "9H-SAU";
-            if (val.includes("BBG")) return "PK-BBG";
-            if (val.includes("BBH")) return "PK-BBH";
-
-            let cleanVal = val.replace("S2-", ""); 
-            let type = "";
-            
-            if (cleanVal.startsWith("AK")) type = "(ATR)";
-            else if (cleanVal.startsWith("AJ")) type = "(BOEING)";
-            else if (cleanVal.startsWith("AL")) type = "(AIRBUS)";
-
-            const finalReg = val.startsWith("S2-") ? val : "S2-" + cleanVal;
-            return `${finalReg} ${type}`.trim();
+            if(!val) return "";
+            if(val.includes("SAU")) return "9H-SAU";
+            if(val.includes("BBG")) return "PK-BBG";
+            if(val.includes("BBH")) return "PK-BBH";
+            let c = val.replace("S2-","");
+            let t = c.startsWith("AK") ? "(ATR)" : c.startsWith("AJ") ? "(BOEING)" : c.startsWith("AL") ? "(AIRBUS)" : "";
+            return (val.startsWith("S2-") ? val : "S2-"+c) + " " + t;
         }
 
         function calculateStatus() {
-            const stdStr = document.getElementById('inp-std').value;
-            const coStr = document.getElementById('inp-co').value;
-            const statusInput = document.getElementById('inp-status');
-
-            if (stdStr.length < 4 || coStr.length < 4) {
-                statusInput.value = ""; 
-                return;
-            }
-
-            const stdMins = parseInt(stdStr.substring(0,2)) * 60 + parseInt(stdStr.substring(2,4));
-            const coMins = parseInt(coStr.substring(0,2)) * 60 + parseInt(coStr.substring(2,4));
-
-            const diff = coMins - stdMins;
-            const absDiff = Math.abs(diff);
-            const unit = absDiff === 1 ? "MIN" : "MINS";
-            const padDiff = absDiff < 10 ? `0${absDiff}` : absDiff;
-
-            let result = "";
-
-            if (diff === 0) {
-                result = "FLIGHT IS ONTIME";
-            } else if (diff > 0) {
-                result = `FLIGHT ${padDiff} ${unit} DELAY`;
-            } else {
-                result = `FLIGHT ${padDiff} ${unit} EARLY`;
-            }
-
-            statusInput.value = result;
+            const std = document.getElementById('inp-std').value;
+            const co = document.getElementById('inp-co').value;
+            const res = document.getElementById('inp-status');
+            
+            if(std.length < 4 || co.length < 4) { res.value = ""; return; }
+            
+            let sM = parseInt(std.substr(0,2))*60 + parseInt(std.substr(2,2));
+            let cM = parseInt(co.substr(0,2))*60 + parseInt(co.substr(2,2));
+            
+            let d = cM - sM;
+            let abs = Math.abs(d);
+            let txt = abs < 10 ? "0"+abs : abs;
+            let u = abs === 1 ? "MIN" : "MINS";
+            
+            res.value = d === 0 ? "FLIGHT IS ONTIME" : d > 0 ? `FLIGHT ${txt} ${u} DELAY` : `FLIGHT ${txt} ${u} EARLY`;
+            res.style.color = d > 0 ? '#dc3545' : d < 0 ? '#28a745' : '#eca400';
         }
 
-        // --- SAVE & GENERATE ---
-        async function saveAndGenerate() {
-            const data = {};
-            fields.forEach(id => data[id] = document.getElementById(id).value.toUpperCase());
+        function calculateGroundTimeLogic() {
+            if(state.flightMode !== 'ROUND') return;
+            const con = document.getElementById('inp-con').value;
+            const co = document.getElementById('inp-co').value;
+            const gt = document.getElementById('inp-ground');
+            
+            if(con.length < 4 || co.length < 4) { gt.value = ""; return; }
+            let nM = parseInt(con.substr(0,2))*60 + parseInt(con.substr(2,2));
+            let oM = parseInt(co.substr(0,2))*60 + parseInt(co.substr(2,2));
+            if(oM < nM) oM += 1440;
+            gt.value = Math.max(0, oM - nM);
+        }
 
-            data['inp-ac'] = formatRegistration(data['inp-ac']);
-            calculateStatus();
-            data['inp-status'] = document.getElementById('inp-status').value;
-
-            if(!data['inp-flight'] || !data['inp-std']) {
-                alert("PLEASE ENTER FLIGHT NUMBER AND STD.");
-                return;
-            }
-
-            const reportId = document.getElementById('report-id').value || Date.now().toString();
-            const reportEntry = {
-                id: reportId,
-                type: state.currentReportType,
-                date: data['inp-date'],
-                flight: "BS-" + data['inp-flight'],
-                route: data['inp-route'],
-                timestamp: new Date().toISOString(),
-                formData: data
+        // --- SAVE / DELETE / DOWNLOAD ---
+        function getFormData() {
+             const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value.toUpperCase() : "";
+             return {
+                date: getVal('inp-date'), ac: formatReg(getVal('inp-ac')), bay: getVal('inp-bay'),
+                docin: getVal('inp-docin'), docout: getVal('inp-docout'),
+                arvFlt: getVal('inp-arv-flt'), arvRoute: getVal('inp-arv-route'),
+                con: getVal('inp-con'), do: getVal('inp-do'), disem: getVal('inp-disem'),
+                deptFlt: getVal('inp-dept-flt'), deptRoute: getVal('inp-dept-route'),
+                std: getVal('inp-std'), dc: getVal('inp-dc'), co: getVal('inp-co'),
+                status: getVal('inp-status'),
+                crew: getVal('inp-crew'), clean: getVal('inp-clean'), cat: getVal('inp-catering'),
+                refuel: getVal('inp-refuel'), fbag: getVal('inp-firstbag'), lbag: getVal('inp-lastbag'),
+                permit: getVal('inp-ac-permit'),
+                board: getVal('inp-boarding'), pax: getVal('inp-pax'), 
+                ground: getVal('inp-ground'), note: getVal('inp-note')
             };
+        }
 
-            const existingIndex = state.savedReports.findIndex(r => r.id === reportId);
-            if(existingIndex >= 0) state.savedReports[existingIndex] = reportEntry;
-            else state.savedReports.push(reportEntry);
+        function saveReport() {
+            const data = getFormData();
+            if(!data.deptFlt) { showModal("ENTER DEPARTURE FLIGHT"); return; }
+            
+            const id = document.getElementById('report-id').value || Date.now().toString();
+            const entry = {
+                id: id, type: state.currentReportType, mode: state.flightMode,
+                flight: "BS-" + data.deptFlt, date: data.date, route: data.deptRoute,
+                timestamp: new Date().toISOString(), formData: data
+            };
+            
+            const idx = state.savedReports.findIndex(r => r.id === id);
+            if(idx >= 0) state.savedReports[idx] = entry;
+            else state.savedReports.push(entry);
             
             localStorage.setItem('usb_reports', JSON.stringify(state.savedReports));
-            await generateJPG(data, state.currentReportType);
+            showModal("OFFICER, FILE SAVED");
         }
 
-        async function generateJPG(data, type) {
-            document.getElementById('loading').classList.remove('hidden');
-
-            document.getElementById('out-flight-title').innerText = `BS-${data['inp-flight']} (${data['inp-route']})`;
-            document.getElementById('out-date').innerText = data['inp-date'];
-            document.getElementById('out-std').innerText = formatTime(data['inp-std']);
-            document.getElementById('out-dc').innerText = formatTime(data['inp-dc']);
-            document.getElementById('out-co').innerText = formatTime(data['inp-co']);
-            document.getElementById('out-bay').innerText = data['inp-bay'];
-            document.getElementById('out-ac').innerText = data['inp-ac'];
-            
-            // --- STATUS BAR TEXT & COLOR LOGIC ---
-            const statusText = data['inp-status'];
-            const bar = document.getElementById('out-status');
-            bar.innerText = statusText;
-
-            // Reset defaults
-            bar.style.backgroundColor = ""; 
-            bar.style.color = "";
-
-            if (statusText.includes("DELAY")) {
-                bar.style.backgroundColor = "#dc3545"; // Red
-                bar.style.color = "white";
-            } else if (statusText.includes("EARLY")) {
-                bar.style.backgroundColor = "#28a745"; // Green
-                bar.style.color = "white";
-            } else {
-                // Ontime (or waiting)
-                bar.style.backgroundColor = "#eca400"; // Yellow/Gold
-                bar.style.color = "black";
-            }
-
-            document.getElementById('out-note').innerText = data['inp-note'];
-            document.getElementById('out-officer').innerText = state.user.name;
-            document.getElementById('out-des').innerText = state.user.des;
-
-            // --- INT'L DOCS VISIBILITY (Modified for logic 3) ---
-            const docInRow = document.getElementById('row-docin');
-            const docOutRow = document.getElementById('row-docout');
-            
-            // Reset to hidden
-            docInRow.classList.add('hidden');
-            docOutRow.classList.add('hidden');
-
-            if (type === 'INTERNATIONAL') {
-                if (data['inp-docin'] && data['inp-docin'].trim() !== "") {
-                    docInRow.classList.remove('hidden');
-                    document.getElementById('out-docin').innerText = formatTime(data['inp-docin']);
-                }
-                if (data['inp-docout'] && data['inp-docout'].trim() !== "") {
-                    docOutRow.classList.remove('hidden');
-                    document.getElementById('out-docout').innerText = formatTime(data['inp-docout']);
-                }
-            }
-
-            const body = document.getElementById('rpt-body-content');
-            body.innerHTML = ''; 
-
-            const addRow = (label, valId, isIntlOnly = false) => {
-                if (isIntlOnly && type !== 'INTERNATIONAL') return;
-                const timeVal = formatTime(data[valId]);
-                if(!timeVal && valId !== 'inp-ground') return; 
-
-                const suffix = valId === 'inp-ground' ? 'MINS' : 'LT';
-                
-                const html = `
-                    <tr>
-                        <td>${label}</td>
-                        <td class="rpt-time-col">${timeVal} ${suffix}</td>
-                    </tr>
-                `;
-                body.innerHTML += html;
-            };
-
-            addRow('CREW REPORTED', 'inp-crew');
-            addRow('CLEANING DONE', 'inp-clean');
-            addRow('CATERING DONE', 'inp-catering');
-            addRow('REFUELING DONE', 'inp-refuel');
-            addRow('FIRST BAGGAGE', 'inp-firstbag');
-            addRow('LAST BAGGAGE', 'inp-lastbag');
-            addRow('BOARDING PERMIT', 'inp-ac-permit', true);
-            addRow('BOARDING START', 'inp-boarding');
-            addRow('ALL ONBOARD', 'inp-pax');
-            addRow('GROUND TIME', 'inp-ground');
-
-            setTimeout(() => {
-                const element = document.getElementById('report-output');
-                html2canvas(element, { scale: 2 }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `RAMP_BS${data['inp-flight']}_${data['inp-date'].replace(/ /g,'')}.jpg`;
-                    link.href = canvas.toDataURL('image/jpeg', 0.9);
-                    link.click();
-                    document.getElementById('loading').classList.add('hidden');
-                    alert("REPORT DOWNLOADED SUCCESSFULLY");
-                });
-            }, 600);
-        }
-
-        // --- SAVED LIST (Modified for logic 4) ---
         function renderSavedList() {
             const list = document.getElementById('saved-list');
             const empty = document.getElementById('empty-msg');
             list.innerHTML = '';
-
-            if (state.savedReports.length === 0) {
-                empty.classList.remove('hidden');
-                return;
-            }
+            if (state.savedReports.length === 0) { empty.classList.remove('hidden'); return; }
             empty.classList.add('hidden');
 
-            const sorted = [...state.savedReports].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-            sorted.forEach(report => {
+            [...state.savedReports].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(r => {
                 const item = document.createElement('div');
-                item.className = 'saved-item';
+                item.className = 'section-box';
+                item.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:15px; margin-bottom:10px;";
                 item.innerHTML = `
-                    <div class="saved-info">
-                        <h4>${report.flight} (${report.route})</h4>
-                        <p>${report.date} | ${report.type}</p>
-                    </div>
                     <div>
-                        <button class="btn-sm btn-edit" onclick="editReport('${report.id}')">EDIT</button>
-                        <button class="btn-sm btn-del" onclick="deleteReport('${report.id}')">✖</button>
+                        <h4 style="color:var(--primary)">${r.flight} (${r.route})</h4>
+                        <small style="color:#666">${r.date} | ${r.mode}</small>
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn-sm btn-secondary" onclick="loadReport('${r.id}')">EDIT</button>
+                        <button class="btn-sm btn-danger" onclick="deleteReport('${r.id}')">DELETE</button>
                     </div>
                 `;
                 list.appendChild(item);
             });
         }
 
-        function editReport(id) {
-            const report = state.savedReports.find(r => r.id === id);
-            if (!report) return;
-
-            startReport(report.type);
-            document.getElementById('report-id').value = report.id;
-            
-            for (const [key, value] of Object.entries(report.formData)) {
-                if(key === 'inp-flight') {
-                    document.getElementById(key).value = value;
-                } else {
-                    const field = document.getElementById(key);
-                    if (field) field.value = value;
-                }
-            }
-            calculateStatus();
-        }
-
         function deleteReport(id) {
-            if(confirm("ARE YOU SURE YOU WANT TO REMOVE THIS REPORT?")) {
+            if(confirm("DELETE THIS REPORT?")) {
                 state.savedReports = state.savedReports.filter(r => r.id !== id);
                 localStorage.setItem('usb_reports', JSON.stringify(state.savedReports));
                 renderSavedList();
             }
         }
 
-        function formatTime(val) {
-            if(!val) return '';
-            return val;
+        function loadReport(id) {
+            const r = state.savedReports.find(x => x.id === id);
+            if(!r) return;
+            startReport(r.type);
+            toggleFlightMode(r.mode);
+            document.getElementById('report-id').value = r.id;
+            
+            const d = r.formData;
+            const set = (k, v) => { if(document.getElementById(k)) document.getElementById(k).value = v || ""; };
+            
+            set('inp-date', d.date); set('inp-ac', d.ac.split(' ')[0]); set('inp-bay', d.bay);
+            set('inp-docin', d.docin); set('inp-docout', d.docout);
+            set('inp-arv-flt', d.arvFlt); set('inp-arv-route', d.arvRoute);
+            set('inp-con', d.con); set('inp-do', d.do); set('inp-disem', d.disem);
+            set('inp-dept-flt', d.deptFlt); set('inp-dept-route', d.deptRoute);
+            set('inp-std', d.std); set('inp-dc', d.dc); set('inp-co', d.co);
+            set('inp-status', d.status);
+            set('inp-crew', d.crew); set('inp-clean', d.clean); set('inp-catering', d.cat);
+            set('inp-refuel', d.refuel); set('inp-firstbag', d.fbag); set('inp-lastbag', d.lbag);
+            set('inp-ac-permit', d.permit);
+            set('inp-boarding', d.board); set('inp-pax', d.pax); set('inp-ground', d.ground);
+            set('inp-note', d.note);
+            showPage('report-page');
         }
 
+        async function downloadJPG() {
+            const data = getFormData();
+            if(!data.deptFlt || !data.std) { showModal("OFFICER, ENTER FLIGHT & STD"); return; }
+            if(!data.ground) { showModal("OFFICER, FILL UP THE GROUND TIME"); return; }
+
+            document.getElementById('loading').classList.remove('hidden');
+
+            // --- FILL REPORT ---
+            const setText = (id, val, isTime=false) => { 
+                const el = document.getElementById(id);
+                if(el) el.innerText = val ? (isTime ? val + " (LT)" : val) : ""; 
+            };
+
+            // Dynamic Header Format: BS-XXX (ROUTE)
+            document.getElementById('out-main-title').innerText = `BS-${data.deptFlt} (${data.deptRoute})`;
+
+            setText('out-date', data.date);
+            setText('out-ac', data.ac);
+            setText('out-bay', data.bay);
+
+            const iIn = document.getElementById('out-box-docin');
+            const iOut = document.getElementById('out-box-docout');
+            if(state.currentReportType === 'INTERNATIONAL') {
+                iIn.classList.remove('hidden'); setText('out-docin', data.docin, true);
+                iOut.classList.remove('hidden'); setText('out-docout', data.docout, true);
+            } else {
+                iIn.classList.add('hidden'); iOut.classList.add('hidden');
+            }
+
+            const arvSec = document.getElementById('out-arrival-section');
+            if(state.flightMode === 'ROUND') {
+                arvSec.classList.remove('hidden');
+                setText('out-arv-flt', 'BS-' + data.arvFlt);
+                setText('out-arv-route', data.arvRoute);
+                setText('out-con', data.con, true);
+                setText('out-do', data.do, true);
+                setText('out-disem', data.disem, true);
+            } else {
+                arvSec.classList.add('hidden');
+            }
+
+            setText('out-dept-flt', 'BS-' + data.deptFlt);
+            setText('out-dept-route', data.deptRoute);
+            setText('out-std', data.std, true);
+            setText('out-dc', data.dc, true);
+            setText('out-co', data.co, true);
+
+            const sb = document.getElementById('out-status-bar');
+            sb.innerText = data.status;
+            sb.style.background = data.status.includes('DELAY') ? '#dc3545' : data.status.includes('EARLY') ? '#28a745' : '#eca400';
+
+            const tbl = document.getElementById('out-timings-table');
+            const r = (lbl, val) => val ? `<tr><td>${lbl}</td><td>${val} (LT)</td></tr>` : '';
+            
+            let rows = r('CREW REPORTED', data.crew) +
+                       r('CLEANING DONE', data.clean) +
+                       r('CATERING DONE', data.cat) +
+                       r('REFUELING DONE', data.refuel) +
+                       r('1ST BAGGAGE', data.fbag) +
+                       r('LAST BAGGAGE', data.lbag) +
+                       r('BOARDING PERMIT', data.permit) +
+                       r('BOARDING START', data.board) +
+                       r('ALL ONBOARD', data.pax);
+            
+            // Modified Logic for Ground Time display in Report
+            const gtDisplay = data.ground === "ON GROUND" ? "ON GROUND" : `${data.ground} MINS`;
+            rows += `<tr style="background:#f9f9f9; border-top:2px solid #ddd;">
+                        <td style="color:#000;">GROUND TIME</td>
+                        <td>${gtDisplay}</td>
+                     </tr>`;
+            
+            tbl.innerHTML = rows;
+            setText('out-note', data.note);
+            setText('out-officer', state.user.name);
+            setText('out-des', state.user.des);
+
+            setTimeout(() => {
+                const element = document.getElementById('report-output');
+                html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `RAMP_${state.flightMode}_BS${data.deptFlt}.jpg`;
+                    link.href = canvas.toDataURL('image/jpeg', 0.9);
+                    link.click();
+                    document.getElementById('loading').classList.add('hidden');
+                    showModal("OFFICER, FILE DOWNLOADED");
+                });
+            }, 800);
+        }
     </script>
 </body>
 </html>

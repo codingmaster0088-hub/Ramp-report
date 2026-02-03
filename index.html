@@ -343,7 +343,6 @@
     <!-- PAGE 1: LOGIN -->
     <div id="login-page" class="container flex-center" style="min-height: 90vh;">
         <div class="card text-center" style="width: 100%; max-width: 400px;">
-            <!-- Heading Modified -->
             <h1 class="bold" style="color:var(--primary); font-size: 1.8rem;">US BANGLA AIRLINES</h1>
             <h2 class="bold" style="color:var(--secondary); font-size: 1.1rem; letter-spacing: 2px;">RAMP REPORT SYSTEM</h2>
             <p class="no-caps" style="font-size: 0.8rem; color: #888; margin-bottom: 30px; font-style: italic;">Invention of Radoan Rasel</p>
@@ -510,11 +509,21 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>C/O (LT)</label>
-                    <div class="input-wrapper">
-                        <input type="tel" id="inp-co" placeholder="1405" onkeyup="calculateStatus(); calculateGroundTimeLogic()" enterkeyhint="next">
-                        <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-co')">🕒</button>
+                <!-- C/O and A/B Row -->
+                <div class="row">
+                    <div class="col form-group">
+                        <label>C/O (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-co" placeholder="1405" onkeyup="calculateStatus(); calculateGroundTimeLogic()" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-co')">🕒</button>
+                        </div>
+                    </div>
+                    <div class="col form-group">
+                        <label>A/B (LT)</label>
+                        <div class="input-wrapper">
+                            <input type="tel" id="inp-ab" placeholder="1415" enterkeyhint="next">
+                            <button class="input-icon-btn icon-right" onclick="setCurrentTime('inp-ab')">🕒</button>
+                        </div>
                     </div>
                 </div>
 
@@ -600,7 +609,6 @@
 
                 <div class="form-group">
                     <label>GROUND TIME (MINS)</label>
-                    <!-- Modified Input Type -->
                     <input type="text" id="inp-ground" placeholder="Calculated" readonly enterkeyhint="next">
                 </div>
 
@@ -661,6 +669,7 @@
                 <div class="rpt-item"><span class="rpt-lbl">STD</span><span class="rpt-val" id="out-std"></span></div>
                 <div class="rpt-item"><span class="rpt-lbl">DOOR CLOSE</span><span class="rpt-val" id="out-dc"></span></div>
                 <div class="rpt-item"><span class="rpt-lbl">C/OFF</span><span class="rpt-val" id="out-co"></span></div>
+                <div class="rpt-item"><span class="rpt-lbl">A/B</span><span class="rpt-val" id="out-ab"></span></div>
             </div>
 
             <div id="out-status-bar" class="status-bar">STATUS</div>
@@ -818,10 +827,9 @@
             if(mode === 'ROUND') {
                 gt.setAttribute('readonly', true);
                 gt.placeholder = "Calculated from C/ON to C/O";
-                gt.value = ""; // Clear previous
                 calculateGroundTimeLogic();
             } else {
-                // Modification: Direct mode -> ON GROUND, Readonly
+                // NEW LOGIC: DIRECT = ON GROUND
                 gt.setAttribute('readonly', true);
                 gt.value = "ON GROUND";
             }
@@ -899,6 +907,7 @@
                 con: getVal('inp-con'), do: getVal('inp-do'), disem: getVal('inp-disem'),
                 deptFlt: getVal('inp-dept-flt'), deptRoute: getVal('inp-dept-route'),
                 std: getVal('inp-std'), dc: getVal('inp-dc'), co: getVal('inp-co'),
+                ab: getVal('inp-ab'), // Added A/B
                 status: getVal('inp-status'),
                 crew: getVal('inp-crew'), clean: getVal('inp-clean'), cat: getVal('inp-catering'),
                 refuel: getVal('inp-refuel'), fbag: getVal('inp-firstbag'), lbag: getVal('inp-lastbag'),
@@ -975,7 +984,7 @@
             set('inp-arv-flt', d.arvFlt); set('inp-arv-route', d.arvRoute);
             set('inp-con', d.con); set('inp-do', d.do); set('inp-disem', d.disem);
             set('inp-dept-flt', d.deptFlt); set('inp-dept-route', d.deptRoute);
-            set('inp-std', d.std); set('inp-dc', d.dc); set('inp-co', d.co);
+            set('inp-std', d.std); set('inp-dc', d.dc); set('inp-co', d.co); set('inp-ab', d.ab);
             set('inp-status', d.status);
             set('inp-crew', d.crew); set('inp-clean', d.clean); set('inp-catering', d.cat);
             set('inp-refuel', d.refuel); set('inp-firstbag', d.fbag); set('inp-lastbag', d.lbag);
@@ -1031,6 +1040,7 @@
             setText('out-std', data.std, true);
             setText('out-dc', data.dc, true);
             setText('out-co', data.co, true);
+            setText('out-ab', data.ab, true); // Added A/B to Report
 
             const sb = document.getElementById('out-status-bar');
             sb.innerText = data.status;
@@ -1049,7 +1059,7 @@
                        r('BOARDING START', data.board) +
                        r('ALL ONBOARD', data.pax);
             
-            // Modified Logic for Ground Time display in Report
+            // Ground Time Logic for Report
             const gtDisplay = data.ground === "ON GROUND" ? "ON GROUND" : `${data.ground} MINS`;
             rows += `<tr style="background:#f9f9f9; border-top:2px solid #ddd;">
                         <td style="color:#000;">GROUND TIME</td>

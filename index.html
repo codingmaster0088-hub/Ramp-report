@@ -15,6 +15,7 @@
             --success: #28a745;
             --danger: #dc3545;
             --bg: #f4f7f6;
+            --sky-blue: #e0f7fa;
             --text: #2c3e50;
             --white: #ffffff;
             --border: #dde2e6;
@@ -74,6 +75,21 @@
             animation: slideUp 0.5s ease-out;
         }
 
+        /* --- Login Page Specific --- */
+        #login-page {
+            background-color: var(--sky-blue);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        #login-page .card {
+            box-shadow: 0 10px 30px rgba(0, 51, 102, 0.15);
+            border: none;
+            border-top: 6px solid var(--primary);
+        }
+
         /* --- Header --- */
         .app-header {
             background: var(--primary);
@@ -104,7 +120,6 @@
             justify-content: flex-end;
         }
 
-        /* Pill Buttons for Header */
         .nav-pill {
             display: flex;
             flex-direction: column;
@@ -252,44 +267,58 @@
             margin-top: 10px; cursor: pointer; 
         }
 
-        /* --- Report Output --- */
+        /* --- Report Output (MASSIVE FONT UPDATE) --- */
         #report-output {
             position: absolute; top: -9999px; left: -9999px;
-            width: 800px; background: white; color: #000;
+            width: 1200px; /* Increased Width again for better spacing */
+            background: white; color: #000;
             font-family: 'Arial', sans-serif; padding: 0;
             border: 2px solid white;
         }
-        .modern-rpt { width: 100%; border: 4px solid var(--primary); }
+        .modern-rpt { width: 100%; border: 8px solid var(--primary); }
+        
         .rpt-header {
             background: var(--primary); color: white;
-            padding: 20px; text-align: center; border-bottom: 5px solid var(--accent);
+            padding: 40px 20px; text-align: center; border-bottom: 8px solid var(--accent);
         }
-        .rpt-header h1 { margin: 0; font-size: 40px; font-weight: 900; letter-spacing: 1px; }
-        .rpt-header h2 { margin: 5px 0 0; font-size: 24px; font-weight: normal; opacity: 0.9; text-transform: uppercase; }
+        /* Massive Header Fonts */
+        .rpt-header h1 { margin: 0; font-size: 65px; font-weight: 900; letter-spacing: 3px; }
+        .rpt-header h2 { margin: 15px 0 0; font-size: 38px; font-weight: normal; opacity: 0.95; text-transform: uppercase; }
         
+        /* Updated Section Headers: Gray, Bold, Large */
         .section-header {
-            background: #eee; color: #000; font-weight: bold; 
-            padding: 8px 15px; font-size: 20px; border-top: 2px solid #000; border-bottom: 2px solid #000;
+            background: #bfbfbf; /* Gray Background */
+            color: #000; 
+            font-weight: 900; /* Bold */
+            padding: 15px 30px; 
+            font-size: 34px; /* Increased */
+            border-top: 4px solid #000; 
+            border-bottom: 4px solid #000;
+            text-transform: uppercase;
         }
 
-        .rpt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px 20px; }
-        .rpt-item { padding: 5px 0; border-bottom: 1px solid #ccc; }
-        .rpt-lbl { display: block; font-size: 14px; color: var(--primary); font-weight: bold; }
-        .rpt-val { font-size: 22px; font-weight: bold; color: #000; }
+        .rpt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px 30px; }
+        .rpt-item { padding: 10px 0; border-bottom: 3px solid #ccc; }
+        
+        /* Massive Labels/Values */
+        .rpt-lbl { display: block; font-size: 24px; color: var(--primary); font-weight: 900; margin-bottom: 6px; }
+        .rpt-val { font-size: 40px; font-weight: 800; color: #000; }
 
         .rpt-table { width: 100%; border-collapse: collapse; }
-        .rpt-table td { padding: 8px 20px; border-bottom: 1px solid #ddd; font-size: 20px; font-weight: bold; }
+        /* Massive Table Fonts */
+        .rpt-table td { padding: 18px 30px; border-bottom: 3px solid #ddd; font-size: 36px; font-weight: 800; }
         .rpt-table td:first-child { color: var(--primary); width: 60%; }
         .rpt-table td:last-child { text-align: right; }
 
         .rpt-footer {
-            border-top: 3px solid var(--primary); padding: 20px; 
+            border-top: 5px solid var(--primary); padding: 40px; 
             display: flex; justify-content: space-between; align-items: flex-end;
             background: #fff;
         }
+        /* Massive Status Bar */
         .status-bar {
-            text-align: center; font-size: 26px; font-weight: bold; padding: 10px;
-            color: white; margin: 0; text-transform: uppercase;
+            text-align: center; font-size: 42px; font-weight: 900; padding: 20px;
+            color: white; margin: 0; text-transform: uppercase; letter-spacing: 2px;
         }
 
         #loading {
@@ -341,8 +370,8 @@
     </div>
 
     <!-- PAGE 1: LOGIN -->
-    <div id="login-page" class="container flex-center" style="min-height: 90vh;">
-        <div class="card text-center" style="width: 100%; max-width: 400px;">
+    <div id="login-page" class="container flex-center hidden">
+        <div class="card text-center" style="width: 100%; max-width: 400px; background:white;">
             <h1 class="bold" style="color:var(--primary); font-size: 1.8rem;">US BANGLA AIRLINES</h1>
             <h2 class="bold" style="color:var(--secondary); font-size: 1.1rem; letter-spacing: 2px;">RAMP REPORT SYSTEM</h2>
             <p class="no-caps" style="font-size: 0.8rem; color: #888; margin-bottom: 30px; font-style: italic;">Invention of Radoan Rasel</p>
@@ -353,8 +382,8 @@
                     <input type="text" id="login-name" placeholder="ENTER NAME" enterkeyhint="next">
                 </div>
                 <div class="form-group">
-                    <label>DESIGNATION</label>
-                    <input type="text" id="login-des" placeholder="E.G. OFFICER" onkeydown="if(event.key === 'Enter') handleLogin()">
+                    <label>USBA ID</label>
+                    <input type="number" id="login-id" placeholder="NUMERIC ID ONLY" onkeydown="if(event.key === 'Enter') handleLogin()">
                 </div>
                 <button class="btn btn-primary" onclick="handleLogin()" style="margin-top: 20px;">LOGIN</button>
             </div>
@@ -509,7 +538,6 @@
                     </div>
                 </div>
 
-                <!-- C/O and A/B Row -->
                 <div class="row">
                     <div class="col form-group">
                         <label>C/O (LT)</label>
@@ -679,16 +707,17 @@
             </table>
 
             <div class="rpt-footer">
-                <div style="width:65%; font-size:18px;">
-                    <div style="background:#f0f0f0; padding:10px; border-left:4px solid var(--primary);">
-                        <strong style="color:var(--primary);">NOTE:</strong> <span id="out-note" style="font-weight:bold;"></span>
+                <div style="width:65%;">
+                    <div style="background:var(--primary); color:white; padding:25px; border-radius:15px;">
+                        <strong style="font-size:30px;">NOTE:</strong> 
+                        <span id="out-note" style="font-weight:bold; font-size:34px; display:block; margin-top:10px;"></span>
                     </div>
                 </div>
-                <div style="text-align:center; min-width:220px;">
-                    <div style="border-top:2px solid black; padding-top:5px;">
-                        <div id="out-officer" style="font-weight:900; font-size:22px;">NAME</div>
-                        <div id="out-des" style="font-size:16px;">DESIGNATION</div>
-                        <div style="font-size:16px; font-weight:bold; margin-top:2px;">DHAKA AIRPORT</div>
+                <div style="text-align:center; min-width:350px;">
+                    <div style="background:white; color:black; padding:20px; border-top:6px solid var(--primary);">
+                        <div id="out-officer" style="font-weight:900; font-size:36px; text-transform:uppercase;">NAME</div>
+                        <div id="out-id" style="font-size:28px; font-weight:bold; margin:5px 0;">USBA ID- 0000</div>
+                        <div style="font-size:24px; font-weight:bold; margin-top:8px; padding-top:8px; border-top:2px solid #ccc;">RAMP OFFICER / DAC</div>
                     </div>
                 </div>
             </div>
@@ -762,13 +791,24 @@
 
         // --- NAV ---
         function showPage(id) {
-            document.querySelectorAll('.container').forEach(d => d.classList.add('hidden'));
+            document.querySelectorAll('.container, #login-page').forEach(d => {
+                if(d.id !== id) {
+                    d.classList.add('hidden');
+                    d.style.display = 'none'; // Force hide
+                }
+            });
+            
             const p = document.getElementById(id);
             p.classList.remove('hidden');
-            if (id !== 'login-page') p.classList.add('fade-in'); 
             
-            const nav = document.getElementById('navbar');
-            id === 'login-page' ? nav.classList.add('hidden') : nav.classList.remove('hidden');
+            if(id === 'login-page') {
+                p.style.display = 'flex'; 
+                document.getElementById('navbar').classList.add('hidden');
+            } else {
+                p.style.display = 'block'; 
+                document.getElementById('navbar').classList.remove('hidden');
+            }
+            
             if(id === 'saved-page') renderSavedList();
         }
 
@@ -782,12 +822,13 @@
 
         function handleLogin() {
             const name = document.getElementById('login-name').value.trim().toUpperCase();
-            const des = document.getElementById('login-des').value.trim().toUpperCase();
-            if(!name || !des) return;
+            const id = document.getElementById('login-id').value.trim();
+            
+            if(!name || !id) return;
             
             showModal("WELCOME OFFICER");
             setTimeout(() => {
-                state.user = { name, des };
+                state.user = { name, id };
                 localStorage.setItem('usb_user', JSON.stringify(state.user));
                 document.getElementById('welcome-msg').innerText = `WELCOME, ${name}`;
                 closeModal();
@@ -829,7 +870,6 @@
                 gt.placeholder = "Calculated from C/ON to C/O";
                 calculateGroundTimeLogic();
             } else {
-                // NEW LOGIC: DIRECT = ON GROUND
                 gt.setAttribute('readonly', true);
                 gt.value = "ON GROUND";
             }
@@ -907,7 +947,7 @@
                 con: getVal('inp-con'), do: getVal('inp-do'), disem: getVal('inp-disem'),
                 deptFlt: getVal('inp-dept-flt'), deptRoute: getVal('inp-dept-route'),
                 std: getVal('inp-std'), dc: getVal('inp-dc'), co: getVal('inp-co'),
-                ab: getVal('inp-ab'), // Added A/B
+                ab: getVal('inp-ab'),
                 status: getVal('inp-status'),
                 crew: getVal('inp-crew'), clean: getVal('inp-clean'), cat: getVal('inp-catering'),
                 refuel: getVal('inp-refuel'), fbag: getVal('inp-firstbag'), lbag: getVal('inp-lastbag'),
@@ -1007,7 +1047,6 @@
                 if(el) el.innerText = val ? (isTime ? val + " (LT)" : val) : ""; 
             };
 
-            // Dynamic Header Format: BS-XXX (ROUTE)
             document.getElementById('out-main-title').innerText = `BS-${data.deptFlt} (${data.deptRoute})`;
 
             setText('out-date', data.date);
@@ -1040,7 +1079,7 @@
             setText('out-std', data.std, true);
             setText('out-dc', data.dc, true);
             setText('out-co', data.co, true);
-            setText('out-ab', data.ab, true); // Added A/B to Report
+            setText('out-ab', data.ab, true);
 
             const sb = document.getElementById('out-status-bar');
             sb.innerText = data.status;
@@ -1059,7 +1098,6 @@
                        r('BOARDING START', data.board) +
                        r('ALL ONBOARD', data.pax);
             
-            // Ground Time Logic for Report
             const gtDisplay = data.ground === "ON GROUND" ? "ON GROUND" : `${data.ground} MINS`;
             rows += `<tr style="background:#f9f9f9; border-top:2px solid #ddd;">
                         <td style="color:#000;">GROUND TIME</td>
@@ -1067,9 +1105,11 @@
                      </tr>`;
             
             tbl.innerHTML = rows;
+            
+            // Footer Details
             setText('out-note', data.note);
-            setText('out-officer', state.user.name);
-            setText('out-des', state.user.des);
+            document.getElementById('out-officer').innerText = state.user.name;
+            document.getElementById('out-id').innerText = `USBA ID- ${state.user.id}`; 
 
             setTimeout(() => {
                 const element = document.getElementById('report-output');

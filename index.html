@@ -267,57 +267,55 @@
             margin-top: 10px; cursor: pointer; 
         }
 
-        /* --- Report Output (MASSIVE FONT UPDATE) --- */
+        /* --- Report Output (WIDE & COMPACT HEIGHT) --- */
         #report-output {
             position: absolute; top: -9999px; left: -9999px;
-            width: 1200px; /* Increased Width again for better spacing */
+            /* WIDTH INCREASED TO 1280px to force a WIDE layout (Landscape-ish) */
+            width: 1280px; 
             background: white; color: #000;
             font-family: 'Arial', sans-serif; padding: 0;
             border: 2px solid white;
         }
-        .modern-rpt { width: 100%; border: 8px solid var(--primary); }
+        .modern-rpt { width: 100%; border: 6px solid var(--primary); }
         
+        /* Reduced Padding for Compact Height */
         .rpt-header {
             background: var(--primary); color: white;
-            padding: 40px 20px; text-align: center; border-bottom: 8px solid var(--accent);
+            padding: 25px 20px; text-align: center; border-bottom: 6px solid var(--accent);
         }
-        /* Massive Header Fonts */
-        .rpt-header h1 { margin: 0; font-size: 65px; font-weight: 900; letter-spacing: 3px; }
-        .rpt-header h2 { margin: 15px 0 0; font-size: 38px; font-weight: normal; opacity: 0.95; text-transform: uppercase; }
+        .rpt-header h1 { margin: 0; font-size: 55px; font-weight: 900; letter-spacing: 2px; }
+        .rpt-header h2 { margin: 8px 0 0; font-size: 30px; font-weight: normal; opacity: 0.95; text-transform: uppercase; }
         
-        /* Updated Section Headers: Gray, Bold, Large */
         .section-header {
-            background: #bfbfbf; /* Gray Background */
+            background: #bfbfbf;
             color: #000; 
-            font-weight: 900; /* Bold */
-            padding: 15px 30px; 
-            font-size: 34px; /* Increased */
-            border-top: 4px solid #000; 
-            border-bottom: 4px solid #000;
+            font-weight: 900;
+            padding: 10px 30px; /* Reduced vertical padding */
+            font-size: 28px;
+            border-top: 3px solid #000; 
+            border-bottom: 3px solid #000;
             text-transform: uppercase;
         }
 
-        .rpt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px 30px; }
-        .rpt-item { padding: 10px 0; border-bottom: 3px solid #ccc; }
+        .rpt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 12px 30px; } /* Reduced Padding */
+        .rpt-item { padding: 6px 0; border-bottom: 2px solid #ccc; } /* Reduced Padding */
         
-        /* Massive Labels/Values */
-        .rpt-lbl { display: block; font-size: 24px; color: var(--primary); font-weight: 900; margin-bottom: 6px; }
-        .rpt-val { font-size: 40px; font-weight: 800; color: #000; }
+        .rpt-lbl { display: block; font-size: 20px; color: var(--primary); font-weight: 900; margin-bottom: 4px; }
+        .rpt-val { font-size: 32px; font-weight: 800; color: #000; }
 
         .rpt-table { width: 100%; border-collapse: collapse; }
-        /* Massive Table Fonts */
-        .rpt-table td { padding: 18px 30px; border-bottom: 3px solid #ddd; font-size: 36px; font-weight: 800; }
+        .rpt-table td { padding: 10px 30px; border-bottom: 2px solid #ddd; font-size: 28px; font-weight: 800; } /* Reduced Padding */
         .rpt-table td:first-child { color: var(--primary); width: 60%; }
         .rpt-table td:last-child { text-align: right; }
 
         .rpt-footer {
-            border-top: 5px solid var(--primary); padding: 40px; 
+            border-top: 4px solid var(--primary); padding: 25px; /* Reduced Padding */
             display: flex; justify-content: space-between; align-items: flex-end;
             background: #fff;
         }
-        /* Massive Status Bar */
+        
         .status-bar {
-            text-align: center; font-size: 42px; font-weight: 900; padding: 20px;
+            text-align: center; font-size: 34px; font-weight: 900; padding: 12px; /* Reduced Padding */
             color: white; margin: 0; text-transform: uppercase; letter-spacing: 2px;
         }
 
@@ -708,13 +706,13 @@
 
             <div class="rpt-footer">
                 <div style="width:65%;">
-                    <div style="background:var(--primary); color:white; padding:25px; border-radius:15px;">
+                    <div style="background:var(--primary); color:white; padding:15px; border-radius:15px;">
                         <strong style="font-size:30px;">NOTE:</strong> 
                         <span id="out-note" style="font-weight:bold; font-size:34px; display:block; margin-top:10px;"></span>
                     </div>
                 </div>
                 <div style="text-align:center; min-width:350px;">
-                    <div style="background:white; color:black; padding:20px; border-top:6px solid var(--primary);">
+                    <div style="background:white; color:black; padding:15px; border-top:6px solid var(--primary);">
                         <div id="out-officer" style="font-weight:900; font-size:36px; text-transform:uppercase;">NAME</div>
                         <div id="out-id" style="font-size:28px; font-weight:bold; margin:5px 0;">USBA ID- 0000</div>
                         <div style="font-size:24px; font-weight:bold; margin-top:8px; padding-top:8px; border-top:2px solid #ccc;">RAMP OFFICER / DAC</div>
